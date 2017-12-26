@@ -70,9 +70,12 @@ func columnHelperReady(pod v1.Pod) string {
 }
 
 func Debugln(val interface{}) {
-	f, err := os.OpenFile("debug.log", os.O_APPEND|os.O_WRONLY, 0666)
-	if err != nil {
-		panic(err)
+	f, err := os.OpenFile("/tmp/debug.log", os.O_APPEND|os.O_WRONLY, 0666)
+	if err != nil && err == os.ErrNotExist {
+		f, err = os.Create("/tmp/debug.log")
+		if err != nil {
+			panic(err)
+		}
 	}
 	defer f.Close()
 	t := time.Now()
