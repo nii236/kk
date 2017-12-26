@@ -1,17 +1,16 @@
 package modal
 
 import (
-	"github.com/nii236/k"
+	"fmt"
+	"strings"
 
 	"github.com/jroimartin/gocui"
+	"github.com/nii236/k"
+	"github.com/nii236/k/pkg/common"
 )
 
 type Widget struct {
-	Name     string
-	Size     SizeEnum
-	Selected int
-	Visible  bool
-	State    *k.State
+	Size SizeEnum
 }
 
 type SizeEnum int
@@ -22,13 +21,9 @@ const (
 	Large
 )
 
-func New(name string, size SizeEnum, state *k.State) *Widget {
+func New(name string, size SizeEnum) *Widget {
 	return &Widget{
-		Name:     name,
-		Size:     size,
-		Selected: 0,
-		Visible:  false,
-		State:    state,
+		Size: size,
 	}
 }
 
@@ -57,24 +52,28 @@ func (st *Widget) Layout(g *gocui.Gui) error {
 	x1 := w/2 + modalWidth/2
 	y0 := h/2 - modalHeight/2
 	y1 := h/2 + modalHeight/2
-	v, err := g.SetView(st.Name, x0, y0, x1, y1)
+	v, err := g.SetView(k.ScreenModal.String(), x0, y0, x1, y1)
 	if err != nil && err != gocui.ErrUnknownView {
 		return err
 	}
-	v.Highlight = true
-	if !st.Visible {
-		g.SetViewOnBottom(st.Name)
-		return nil
-	}
-	g.SetViewOnTop(st.Name)
-	v.Title = st.Name
-	return nil
-}
 
-func Toggle(w *Widget) func(g *gocui.Gui, v *gocui.View) error {
-	return func(g *gocui.Gui, v *gocui.View) error {
-		g.SetCurrentView(w.Name)
-		w.Visible = !w.Visible
+	store, err := common.JSONToState(g)
+	if err != nil {
+		fmt.Fprint(v, err)
 		return nil
 	}
+	if store.UI.ActiveScreen != k.ScreenModal {
+		g.SetViewOnBottom(k.ScreenModal.String())
+		return nil
+	}
+
+	g.SetCurrentView(k.ScreenModal.String())
+	g.SetViewOnTop(k.ScreenModal.String())
+	v.Clear()
+	v.Highlight = true
+	v.Title = store.UI.Modal.Title
+	v.SetCursor(0, store.UI.Modal.Cursor)
+	lines := store.UI.Modal.Lines
+	v.Write([]byte(strings.Join(lines, "\n")))
+	return nil
 }

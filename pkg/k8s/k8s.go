@@ -15,13 +15,25 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-// ClientSet contains an embedded Kubernetes client set
-type ClientSet struct {
+type ClientSet interface {
+	GetPods(namespace string) (*v1.PodList, error)
+	GetNamespaces() (*v1.NamespaceList, error)
+	GetPodContainers(podName string, namespace string) []string
+	DeletePod(podName string, namespace string) error
+	GetPodContainerLogs(podName string, containerName string, namespace string, o io.Writer) error
+	ColumnHelperRestarts(containerStatuses []v1.ContainerStatus) string
+	ColumnHelperAge(t metav1.Time) string
+	ColumnHelperStatus(s v1.PodStatus) string
+	ColumnHelperReady(containerStatuses []v1.ContainerStatus) string
+}
+
+// RealClientSet contains an embedded Kubernetes client set
+type RealClientSet struct {
 	clientset *kubernetes.Clientset
 }
 
 // New returns a new clientset
-func New(flags *k.ParsedFlags) (*ClientSet, error) {
+func New(flags *k.ParsedFlags) (*RealClientSet, error) {
 	// Use the current context in kubeconfig
 	cc, err := clientcmd.BuildConfigFromFlags("", flags.KubeConfigPath)
 	if err != nil {
@@ -34,23 +46,23 @@ func New(flags *k.ParsedFlags) (*ClientSet, error) {
 		return nil, err
 	}
 
-	return &ClientSet{
+	return &RealClientSet{
 		clientSet,
 	}, nil
 }
 
 // Get pods (use namespace)
-func (cs *ClientSet) GetPods(namespace string) (*v1.PodList, error) {
+func (cs *RealClientSet) GetPods(namespace string) (*v1.PodList, error) {
 	return cs.clientset.CoreV1().Pods(namespace).List(metav1.ListOptions{})
 }
 
 // Get namespaces
-func (cs *ClientSet) GetNamespaces() (*v1.NamespaceList, error) {
+func (cs *RealClientSet) GetNamespaces() (*v1.NamespaceList, error) {
 	return cs.clientset.CoreV1().Namespaces().List(metav1.ListOptions{})
 }
 
 // Get the pod containers
-func (cs *ClientSet) GetPodContainers(podName string, namespace string) []string {
+func (cs *RealClientSet) GetPodContainers(podName string, namespace string) []string {
 	var pc []string
 
 	pod, _ := cs.clientset.CoreV1().Pods(namespace).Get(podName, metav1.GetOptions{})
@@ -62,12 +74,12 @@ func (cs *ClientSet) GetPodContainers(podName string, namespace string) []string
 }
 
 // Delete pod
-func (cs *ClientSet) DeletePod(podName string, namespace string) error {
+func (cs *RealClientSet) DeletePod(podName string, namespace string) error {
 	return cs.clientset.CoreV1().Pods(namespace).Delete(podName, &metav1.DeleteOptions{})
 }
 
 // Get pod container logs
-func (cs *ClientSet) GetPodContainerLogs(podName string, containerName string, namespace string, o io.Writer) error {
+func (cs *RealClientSet) GetPodContainerLogs(podName string, containerName string, namespace string, o io.Writer) error {
 	tl := int64(50)
 
 	opts := &v1.PodLogOptions{
@@ -90,7 +102,7 @@ func (cs *ClientSet) GetPodContainerLogs(podName string, containerName string, n
 }
 
 // Column helper: Restarts
-func (cs *ClientSet) ColumnHelperRestarts(containerStatuses []v1.ContainerStatus) string {
+func (cs *RealClientSet) ColumnHelperRestarts(containerStatuses []v1.ContainerStatus) string {
 	r := 0
 	for _, c := range containerStatuses {
 		r = r + int(c.RestartCount)
@@ -99,7 +111,7 @@ func (cs *ClientSet) ColumnHelperRestarts(containerStatuses []v1.ContainerStatus
 }
 
 // Column helper: Age
-func (cs *ClientSet) ColumnHelperAge(t metav1.Time) string {
+func (cs *RealClientSet) ColumnHelperAge(t metav1.Time) string {
 	d := time.Now().Sub(t.Time)
 
 	if d.Hours() > 1 {
@@ -119,12 +131,12 @@ func (cs *ClientSet) ColumnHelperAge(t metav1.Time) string {
 }
 
 // Column helper: Status
-func (cs *ClientSet) ColumnHelperStatus(s v1.PodStatus) string {
+func (cs *RealClientSet) ColumnHelperStatus(s v1.PodStatus) string {
 	return fmt.Sprintf("%s", s.Phase)
 }
 
 // Column helper: Ready
-func (cs *ClientSet) ColumnHelperReady(containerStatuses []v1.ContainerStatus) string {
+func (cs *RealClientSet) ColumnHelperReady(containerStatuses []v1.ContainerStatus) string {
 	cr := 0
 	for _, c := range containerStatuses {
 		if c.Ready {

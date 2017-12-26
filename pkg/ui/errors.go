@@ -2,21 +2,20 @@ package ui
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/jroimartin/gocui"
 )
 
 // Useful to debug Pody (display with CTRL+D)
-func debug(g *gocui.Gui, output interface{}) {
-	v, err := g.View("debug")
-	if err == nil {
-		t := time.Now()
-		tf := t.Format("2006-01-02 15:04:05")
-		output = tf + " > " + output.(string)
-		fmt.Fprintln(v, output)
-	}
-}
+// func debug(g *gocui.Gui, output interface{}) {
+// 	v, err := g.View("Debug")
+// 	if err == nil {
+// 		t := time.Now()
+// 		tf := t.Format("2006-01-02 15:04:05")
+// 		output = tf + " > " + output.(string)
+// 		fmt.Fprintln(v, output)
+// 	}
+// }
 
 // Hide error box
 func hideErrorPopup(g *gocui.Gui) {

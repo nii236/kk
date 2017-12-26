@@ -44,3 +44,11 @@
 [[constraint]]
   name = "github.com/imdario/mergo"
   version = "0.2.4"
+
+[[constraint]]
+  name = "github.com/ghodss/yaml"
+  version = "1.0.0"
+
+[[constraint]]
+  name = "github.com/pkg/errors"
+  version = "0.8.0"

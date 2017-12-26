@@ -1,7 +1,12 @@
 package table
 
 import (
+	"fmt"
+
 	"github.com/jroimartin/gocui"
+	"github.com/nii236/k"
+	"github.com/nii236/k/pkg/common"
+	"github.com/olekukonko/tablewriter"
 )
 
 type Widget struct {
@@ -43,9 +48,35 @@ func (tw *Widget) Layout(g *gocui.Gui) error {
 	if err != nil && err != gocui.ErrUnknownView {
 		return err
 	}
-	g.SetCurrentView(tw.Name)
 	v.Highlight = true
 	v.Title = tw.Name
+	v.Clear()
+	v.SelBgColor = gocui.ColorCyan
+	v.SelFgColor = gocui.ColorBlack
+	v.Highlight = true
+
+	store, err := common.JSONToState(g)
+	if err != nil {
+		fmt.Fprint(v, err)
+		return nil
+	}
+
+	if store.UI.ActiveScreen == k.Screen(tw.Name) {
+		_, err := g.SetCurrentView(tw.Name)
+		if err != nil && err != gocui.ErrUnknownView {
+			return err
+		}
+
+	}
+
+	lines := store.UI.Table.Lines
+	t := tablewriter.NewWriter(v)
+	t.SetBorder(false)
+	t.SetColumnSeparator("")
+	t.AppendBulk(lines)
+	t.Render()
+
+	v.SetCursor(0, store.UI.Table.Cursor)
 
 	return nil
 }

@@ -61,6 +61,11 @@ func main() {
 			Usage:  "Debug logging",
 			EnvVar: "DEBUG",
 		},
+		cli.BoolFlag{
+			Name:   "test, t",
+			Usage:  "Use the K8S mock client",
+			EnvVar: "TEST",
+		},
 	}
 	app.Run(os.Args)
 }
