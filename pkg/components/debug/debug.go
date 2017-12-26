@@ -5,8 +5,7 @@ import (
 	"strings"
 
 	"github.com/jroimartin/gocui"
-	"github.com/nii236/k"
-	"github.com/nii236/k/pkg/common"
+	"github.com/nii236/k/pkg/k"
 )
 
 type Widget struct {
@@ -28,7 +27,7 @@ func (st *Widget) Layout(g *gocui.Gui) error {
 		return err
 	}
 
-	store, err := common.JSONToState(g)
+	store, err := k.JSONToState(g)
 	if err != nil {
 		fmt.Fprint(v, err)
 		return nil

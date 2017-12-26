@@ -10,7 +10,7 @@ import (
 	// "k8s.io/client-go/kubernetes/typed/core/v1/fake"
 	"k8s.io/client-go/kubernetes/fake"
 
-	"github.com/nii236/k"
+	"github.com/nii236/k/pkg/k"
 	_ "k8s.io/client-go/plugin/pkg/client/auth"
 
 	appsv1 "k8s.io/api/apps/v1"

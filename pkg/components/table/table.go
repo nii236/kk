@@ -4,8 +4,7 @@ import (
 	"fmt"
 
 	"github.com/jroimartin/gocui"
-	"github.com/nii236/k"
-	"github.com/nii236/k/pkg/common"
+	"github.com/nii236/k/pkg/k"
 	"github.com/olekukonko/tablewriter"
 )
 
@@ -50,7 +49,7 @@ func (tw *Widget) Layout(g *gocui.Gui) error {
 	}
 	v.Clear()
 
-	store, err := common.JSONToState(g)
+	store, err := k.JSONToState(g)
 	if err != nil {
 		fmt.Fprint(v, err)
 		return nil

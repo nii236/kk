@@ -3,7 +3,7 @@ package k8s
 import (
 	"io"
 
-	"github.com/nii236/k"
+	"github.com/nii236/k/pkg/k"
 	"k8s.io/client-go/kubernetes"
 	_ "k8s.io/client-go/plugin/pkg/client/auth"
 	"k8s.io/client-go/tools/clientcmd"

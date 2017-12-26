@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 
 	"github.com/jroimartin/gocui"
-	"github.com/nii236/k"
+	"github.com/nii236/k/pkg/k"
 	v1 "k8s.io/api/core/v1"
 )
 

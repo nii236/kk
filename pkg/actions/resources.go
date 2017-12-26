@@ -2,8 +2,8 @@ package actions
 
 import (
 	"github.com/jroimartin/gocui"
-	"github.com/nii236/k"
 	"github.com/nii236/k/pkg/components/state"
+	"github.com/nii236/k/pkg/k"
 )
 
 func HandleEnter(s *state.Widget) func(g1 *gocui.Gui, _ *gocui.View) error {

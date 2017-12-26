@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/nii236/k"
+	"github.com/nii236/k/pkg/k"
 	"github.com/nii236/k/pkg/k8s"
 	"github.com/nii236/k/pkg/logger"
 	"github.com/nii236/k/pkg/ui"
