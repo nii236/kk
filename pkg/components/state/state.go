@@ -30,10 +30,11 @@ func New(name string) *Widget {
 			ActiveScreen: "Table",
 			Table: &k.TableView{
 				Kind:     "Pods",
-				Cursor:   0,
+				Cursor:   1,
 				Lines:    [][]string{},
-				Headers:  []string{},
+				Headers:  k.PodListHeaders,
 				Selected: "",
+				Filter:   "",
 			},
 			Modal: &k.ModalView{
 				Cursor:   0,

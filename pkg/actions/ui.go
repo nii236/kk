@@ -3,7 +3,6 @@ package actions
 import (
 	"github.com/jroimartin/gocui"
 	"github.com/nii236/k"
-	"github.com/nii236/k/pkg/common"
 	"github.com/nii236/k/pkg/components/state"
 )
 
@@ -33,34 +32,6 @@ func ShowErrors(s *state.Widget) func(g1 *gocui.Gui, _ *gocui.View) error {
 func HideErrors(s *state.Widget) func(g1 *gocui.Gui, _ *gocui.View) error {
 	return func(g *gocui.Gui, v2 *gocui.View) error {
 		s.State.UI.SetTableActive(g)
-		return nil
-	}
-}
-
-func ShowPodList(s *state.Widget) func(g1 *gocui.Gui, _ *gocui.View) error {
-	return func(g *gocui.Gui, v2 *gocui.View) error {
-		s.State.UI.SetTableActive(g)
-		s.State.UI.Table.SetKind(g, k.KindPods)
-		podList := [][]string{}
-		for _, pod := range s.State.Entities.Pods.Pods.Items {
-			podList = append(podList, common.PodLineHelper(pod))
-		}
-		s.State.UI.Table.SetLines(g, podList)
-		s.State.UI.Table.SetHeaders(g, k.PodListHeaders)
-		return nil
-	}
-}
-
-func ShowNamespaceList(s *state.Widget) func(g1 *gocui.Gui, _ *gocui.View) error {
-	return func(g *gocui.Gui, v2 *gocui.View) error {
-		s.State.UI.SetTableActive(g)
-		s.State.UI.Table.SetKind(g, k.KindNamespaces)
-		lines := [][]string{}
-		for _, ns := range s.State.Entities.Namespaces.Namespaces.Items {
-			lines = append(lines, []string{ns.Name})
-		}
-		s.State.UI.Table.SetLines(g, lines)
-		s.State.UI.Table.SetHeaders(g, k.NamespaceListHeaders)
 		return nil
 	}
 }

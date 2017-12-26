@@ -23,6 +23,7 @@ type StateView struct {
 type TableView struct {
 	Cursor   int
 	Selected string
+	Filter   string
 	Kind     Kind
 	Lines    [][]string
 	Headers  []string
@@ -142,10 +143,49 @@ func (p *TableView) SetKind(g1 *gocui.Gui, kind Kind) {
 	)
 }
 
+func (p *TableView) ClearFilter(g1 *gocui.Gui) {
+	g1.Update(
+		func(g *gocui.Gui) error {
+			p.Filter = ""
+			return nil
+		},
+	)
+}
+
+func (p *TableView) ApplyFilter(g1 *gocui.Gui) {
+	g1.Update(
+		func(g *gocui.Gui) error {
+			if p.Filter == "" {
+				return nil
+			}
+
+			if p.Kind == KindPods {
+				result := [][]string{}
+				for _, line := range p.Lines {
+					if line[0] == p.Filter {
+						result = append(result, line)
+					}
+				}
+				p.Lines = result
+			}
+			return nil
+		},
+	)
+}
+
 func (p *TableView) SetLines(g1 *gocui.Gui, lines [][]string) {
 	g1.Update(
 		func(g *gocui.Gui) error {
 			p.Lines = lines
+			return nil
+		},
+	)
+}
+
+func (p *TableView) SetFilter(g1 *gocui.Gui, filter string) {
+	g1.Update(
+		func(g *gocui.Gui) error {
+			p.Filter = filter
 			return nil
 		},
 	)
@@ -165,6 +205,52 @@ func (p *ModalView) SetTitle(g1 *gocui.Gui, title string) {
 		func(g *gocui.Gui) error {
 			p.Title = title
 			return nil
+		},
+	)
+}
+
+func (s *State) UpdateTable(g1 *gocui.Gui, kind Kind) {
+	g1.Update(
+		func(g *gocui.Gui) error {
+			if kind == KindNamespaces {
+				Debugln("UpdateTable Namespace")
+				s.UI.Table.SetHeaders(g, NamespaceListHeaders)
+				lines := [][]string{}
+				for _, ns := range s.Entities.Namespaces.Namespaces.Items {
+					lines = append(lines, []string{ns.Name})
+				}
+				s.UI.Table.SetLines(g, lines)
+				s.UI.Table.ApplyFilter(g)
+			}
+			if kind == KindPods {
+				Debugln("UpdateTable Pods")
+				s.UI.Table.SetHeaders(g, PodListHeaders)
+				podList := [][]string{}
+				for _, pod := range s.Entities.Pods.Pods.Items {
+					podList = append(podList, PodLineHelper(pod))
+				}
+				s.UI.Table.SetLines(g, podList)
+				s.UI.Table.ApplyFilter(g)
+			}
+			return nil
+
+		},
+	)
+}
+
+func (ur *TableView) SelectResource(g1 *gocui.Gui, resource string) {
+	g1.Update(
+		func(g *gocui.Gui) error {
+			switch resource {
+			case KindNamespaces.String():
+				Debugln("SelectResource Namespace")
+				ur.SetKind(g, KindNamespaces)
+			case KindPods.String():
+				Debugln("SelectResource Pod")
+				ur.SetKind(g, KindPods)
+			}
+			return nil
+
 		},
 	)
 }

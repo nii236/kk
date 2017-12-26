@@ -61,8 +61,8 @@ func (tw *Widget) Layout(g *gocui.Gui) error {
 	v.SelFgColor = gocui.ColorBlack
 	v.Highlight = true
 
-	if store.UI.ActiveScreen == k.Screen(tw.Name) {
-		_, err := g.SetCurrentView(tw.Name)
+	if store.UI.ActiveScreen == k.ScreenTable {
+		_, err := g.SetCurrentView(k.ScreenTable.String())
 		if err != nil && err != gocui.ErrUnknownView {
 			return err
 		}
@@ -80,6 +80,7 @@ func (tw *Widget) Layout(g *gocui.Gui) error {
 	t.Render()
 
 	v.SetCursor(0, store.UI.Table.Cursor)
+	v.SetOrigin(0, store.UI.Table.Cursor-maxY+10)
 
 	return nil
 }

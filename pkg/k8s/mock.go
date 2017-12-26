@@ -2,6 +2,7 @@ package k8s
 
 import (
 	"io"
+	"strings"
 	"time"
 
 	"github.com/manveru/faker"
@@ -50,7 +51,7 @@ func (cs *MockClientSet) seedNamespaces() error {
 				APIVersion: "v1",
 			},
 			ObjectMeta: metav1.ObjectMeta{
-				Name: cs.faker.Name(),
+				Name: strings.Join(cs.faker.Words(2, true), "-"),
 				Labels: map[string]string{
 					"tag": "mockdata",
 				},
@@ -66,27 +67,42 @@ func (cs *MockClientSet) seedNamespaces() error {
 	return nil
 }
 
+func (cs *MockClientSet) seedPod(ns, name string) error {
+	// fmt.Println(ns)
+	// fmt.Println(name)
+	_, err := cs.clientSet.CoreV1().Pods(ns).Create(&corev1.Pod{
+		TypeMeta: metav1.TypeMeta{
+			Kind:       "Pod",
+			APIVersion: "v1",
+		},
+		ObjectMeta: metav1.ObjectMeta{
+			Name: name,
+			Labels: map[string]string{
+				"tag": "mockdata",
+			},
+			CreationTimestamp: metav1.Time{
+				Time: time.Now().Add(-48 * time.Hour),
+			},
+		},
+	})
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (cs *MockClientSet) seedPods() error {
-	for i := 0; i < 5; i++ {
-		_, err := cs.clientSet.CoreV1().Pods("default").Create(&corev1.Pod{
-			TypeMeta: metav1.TypeMeta{
-				Kind:       "Pod",
-				APIVersion: "v1",
-			},
-			ObjectMeta: metav1.ObjectMeta{
-				Name: cs.faker.Name(),
-				Labels: map[string]string{
-					"tag": "mockdata",
-				},
-				CreationTimestamp: metav1.Time{
-					Time: time.Now().Add(-48 * time.Hour),
-				},
-			},
-		})
-		if err != nil {
-			return err
+	namespaces, err := cs.clientSet.CoreV1().Namespaces().List(metav1.ListOptions{})
+	if err != nil {
+		return err
+	}
+
+	for _, ns := range namespaces.Items {
+		for i := 0; i < 5; i++ {
+			cs.seedPod(ns.Name, strings.Join(cs.faker.Words(3, true), "-"))
 		}
 	}
+	// os.Exit(1)
 	return nil
 }
 
@@ -114,11 +130,11 @@ func (cs *MockClientSet) seedDeployments() error {
 	return nil
 }
 func (cs *MockClientSet) seed() error {
-	err := cs.seedDeployments()
+	err := cs.seedNamespaces()
 	if err != nil {
 		return err
 	}
-	err = cs.seedNamespaces()
+	err = cs.seedDeployments()
 	if err != nil {
 		return err
 	}
@@ -131,7 +147,7 @@ func (cs *MockClientSet) seed() error {
 
 // Get pods (use namespace)
 func (cs *MockClientSet) GetPods(namespace string) (*corev1.PodList, error) {
-	return cs.clientSet.CoreV1().Pods("default").List(metav1.ListOptions{})
+	return cs.clientSet.CoreV1().Pods(namespace).List(metav1.ListOptions{})
 }
 
 // Get namespaces

@@ -6,18 +6,21 @@ import (
 	"github.com/nii236/k/pkg/components/state"
 )
 
-func SelectResource(s *state.Widget) func(g1 *gocui.Gui, _ *gocui.View) error {
+func HandleEnter(s *state.Widget) func(g1 *gocui.Gui, _ *gocui.View) error {
 	return func(g *gocui.Gui, v2 *gocui.View) error {
-		resource := s.State.UI.Modal.Selected
-		switch resource {
-		case k.KindNamespaces.String():
-			s.State.Entities.Debug.Append(g, "Show NS")
-			switchToNamespace := ShowNamespaceList(s)
-			switchToNamespace(g, v2)
-		case k.KindPods.String():
-			s.State.Entities.Debug.Append(g, "Show NS")
-			switchToPods := ShowPodList(s)
-			switchToPods(g, v2)
+		if s.State.UI.ActiveScreen == k.ScreenModal {
+			switch s.State.UI.Modal.Kind {
+			case k.KindResources:
+				resource := s.State.UI.Modal.Selected
+				s.State.UI.Table.SelectResource(g, resource)
+				s.State.UpdateTable(g, k.Kind(resource))
+				s.State.UI.SetTableActive(g)
+			case k.KindNamespaces:
+				selected := s.State.UI.Modal.Selected
+				s.State.UI.Table.SetFilter(g, selected)
+				s.State.UpdateTable(g, k.Kind(k.KindPods))
+				s.State.UI.SetTableActive(g)
+			}
 		}
 		return nil
 	}

@@ -6,7 +6,7 @@ import (
 	"github.com/urfave/cli"
 )
 
-var PodListHeaders = []string{"Name", "Restarts", "Age", "Ready", "Status"}
+var PodListHeaders = []string{"Namespace", "Name", "Restarts", "Age", "Ready", "Status"}
 var NamespaceListHeaders = []string{"Name"}
 
 type Kind string
