@@ -14,6 +14,7 @@ func Debugln(val interface{}) {
 			panic(err)
 		}
 	}
+
 	defer f.Close()
 	t := time.Now()
 	tf := t.Format("2006-01-02 15:04:05")

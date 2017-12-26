@@ -89,7 +89,9 @@ func New(flags *k.ParsedFlags, clientSet *k8s.RealClientSet) (*App, error) {
 		Key{"", gocui.KeyArrowDown, actions.Next(store)},
 		Key{"", gocui.KeyPgdn, actions.PageDown(store)},
 		Key{"", gocui.KeyEnter, actions.HandleEnter(store)},
-		Key{"", gocui.KeyCtrlF, actions.ClearFilter(store)},
+		Key{"Table", gocui.KeyCtrlF, actions.TableClearFilter(store)},
+		Key{"Table", gocui.KeyArrowUp, actions.TableCursorMoveUp(store)},
+		Key{"Table", gocui.KeyArrowDown, actions.TableCursorMoveDown(store)},
 	}
 
 	for _, key := range keys {

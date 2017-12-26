@@ -13,12 +13,10 @@ func HandleEnter(s *state.Widget) func(g1 *gocui.Gui, _ *gocui.View) error {
 			case k.KindResources:
 				resource := s.State.UI.Modal.Selected
 				s.State.UI.Table.SelectResource(g, resource)
-				s.State.UpdateTable(g, k.Kind(resource))
 				s.State.UI.SetTableActive(g)
 			case k.KindNamespaces:
 				selected := s.State.UI.Modal.Selected
-				s.State.UI.Table.SetFilter(g, selected)
-				s.State.UpdateTable(g, k.Kind(k.KindPods))
+				s.State.Entities.Pods.SetFilter(g, selected)
 				s.State.UI.SetTableActive(g)
 			}
 		}

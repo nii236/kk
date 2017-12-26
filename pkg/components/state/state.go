@@ -30,9 +30,6 @@ func New(name string) *Widget {
 			ActiveScreen: "Table",
 			Table: &k.TableView{
 				Kind:     "Pods",
-				Cursor:   1,
-				Lines:    [][]string{},
-				Headers:  k.PodListHeaders,
 				Selected: "",
 				Filter:   "",
 			},
@@ -54,6 +51,7 @@ func New(name string) *Widget {
 				Lines: []interface{}{},
 			},
 			Pods: &k.PodEntities{
+				Cursor:         1,
 				Loaded:         false,
 				SendingRequest: false,
 				Pods:           &v1.PodList{},
@@ -63,6 +61,7 @@ func New(name string) *Widget {
 				Acknowledged: true,
 			},
 			Namespaces: &k.NamespaceEntities{
+				Cursor:         1,
 				Loaded:         false,
 				SendingRequest: false,
 				Namespaces:     &v1.NamespaceList{},

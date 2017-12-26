@@ -9,6 +9,7 @@ import (
 
 func LoadMock(client k8s.ClientSet, s *state.Widget) func(g *gocui.Gui, _ *gocui.View) error {
 	return func(g *gocui.Gui, _ *gocui.View) error {
+		k.Debugln("ActiveScreen: " + s.State.UI.ActiveScreen)
 		// Load Namespaces
 		namespaces, err := client.GetNamespaces()
 		if err != nil {
@@ -37,9 +38,6 @@ func LoadMock(client k8s.ClientSet, s *state.Widget) func(g *gocui.Gui, _ *gocui
 			for _, pod := range data.Items {
 				podList = append(podList, k.PodLineHelper(pod))
 			}
-
-			s.State.UI.Table.SetLines(g, podList)
-			s.State.UI.Table.SetHeaders(g, k.PodListHeaders)
 		}
 
 		// Load Resources
