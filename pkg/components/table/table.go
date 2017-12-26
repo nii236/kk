@@ -48,18 +48,18 @@ func (tw *Widget) Layout(g *gocui.Gui) error {
 	if err != nil && err != gocui.ErrUnknownView {
 		return err
 	}
-	v.Highlight = true
-	v.Title = tw.Name
 	v.Clear()
-	v.SelBgColor = gocui.ColorCyan
-	v.SelFgColor = gocui.ColorBlack
-	v.Highlight = true
 
 	store, err := common.JSONToState(g)
 	if err != nil {
 		fmt.Fprint(v, err)
 		return nil
 	}
+	v.Highlight = true
+	v.Title = store.UI.Table.Kind.String()
+	v.SelBgColor = gocui.ColorCyan
+	v.SelFgColor = gocui.ColorBlack
+	v.Highlight = true
 
 	if store.UI.ActiveScreen == k.Screen(tw.Name) {
 		_, err := g.SetCurrentView(tw.Name)
@@ -73,7 +73,10 @@ func (tw *Widget) Layout(g *gocui.Gui) error {
 	t := tablewriter.NewWriter(v)
 	t.SetBorder(false)
 	t.SetColumnSeparator("")
+	t.SetHeader(store.UI.Table.Headers)
 	t.AppendBulk(lines)
+	t.SetAlignment(tablewriter.ALIGN_CENTER)
+	t.SetHeaderLine(false)
 	t.Render()
 
 	v.SetCursor(0, store.UI.Table.Cursor)

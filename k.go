@@ -6,10 +6,19 @@ import (
 	"github.com/urfave/cli"
 )
 
+var PodListHeaders = []string{"Name", "Restarts", "Age", "Ready", "Status"}
+var NamespaceListHeaders = []string{"Name"}
+
 type Kind string
 
+func (k Kind) String() string {
+	return string(k)
+}
+
 const (
-	KindPods Kind = "Pods"
+	KindPods       Kind = "Pods"
+	KindNamespaces Kind = "Namespaces"
+	KindResources  Kind = "Resources"
 )
 
 type Screen string

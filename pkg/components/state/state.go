@@ -29,12 +29,15 @@ func New(name string) *Widget {
 		UI: &k.UIReducer{
 			ActiveScreen: "Table",
 			Table: &k.TableView{
+				Kind:     "Pods",
 				Cursor:   0,
 				Lines:    [][]string{},
+				Headers:  []string{},
 				Selected: "",
 			},
 			Modal: &k.ModalView{
 				Cursor:   0,
+				Kind:     k.KindNamespaces,
 				Lines:    []string{},
 				Selected: "",
 			},
@@ -53,6 +56,18 @@ func New(name string) *Widget {
 				Loaded:         false,
 				SendingRequest: false,
 				Pods:           &v1.PodList{},
+			},
+			Errors: &k.ErrorEntities{
+				Lines:        []string{},
+				Acknowledged: true,
+			},
+			Namespaces: &k.NamespaceEntities{
+				Loaded:         false,
+				SendingRequest: false,
+				Namespaces:     &v1.NamespaceList{},
+			},
+			Resources: &k.ResourceEntities{
+				Resources: []string{k.KindNamespaces.String(), k.KindPods.String()},
 			},
 		},
 	}

@@ -17,11 +17,6 @@ import (
 // 	}
 // }
 
-// Hide error box
-func hideErrorPopup(g *gocui.Gui) {
-	g.DeleteView("errors")
-}
-
 func displayError(g *gocui.Gui, e error) error {
 	lMaxX, lMaxY := g.Size()
 	minX := lMaxX / 6

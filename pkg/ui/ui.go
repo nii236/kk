@@ -8,6 +8,7 @@ import (
 
 	"github.com/jroimartin/gocui"
 	"github.com/nii236/k"
+	"github.com/nii236/k/pkg/actions"
 	"github.com/nii236/k/pkg/components/debug"
 	"github.com/nii236/k/pkg/components/modal"
 	"github.com/nii236/k/pkg/components/span"
@@ -77,17 +78,17 @@ func New(flags *k.ParsedFlags, clientSet *k8s.RealClientSet) (*App, error) {
 
 	keys := []Key{
 		Key{"", gocui.KeyCtrlC, exit},
-		Key{"", gocui.KeyCtrlR, ActionToggleResources(store)},
-		Key{"", gocui.KeyCtrlN, ActionToggleNamespaces(store)},
-		Key{"", gocui.KeyCtrlD, ActionToggleViewDebug(store)},
-		Key{"", gocui.KeyCtrlB, ActionToggleState(store)},
-		Key{"", gocui.KeyEsc, HideError},
-		Key{"", 'L', ActionLoadMock(app.ClientSet, store)},
-		Key{"", gocui.KeyArrowUp, ActionPrev(store)},
-		Key{"", gocui.KeyArrowDown, ActionNext(store)},
-		// Key{"Resources", gocui.KeyArrowUp, modal.Prev(resources)},
-		// Key{"Resources", gocui.KeyArrowDown, modal.Next(resources)},
-		// Key{"", gocui.KeyEnter, ActionSelectResource},
+		Key{"", gocui.KeyCtrlR, actions.ToggleResources(store)},
+		Key{"", gocui.KeyCtrlN, actions.ToggleNamespaces(store)},
+		Key{"", gocui.KeyCtrlD, actions.ToggleViewDebug(store)},
+		Key{"", gocui.KeyCtrlB, actions.ToggleState(store)},
+		Key{"", gocui.KeyEsc, actions.AcknowledgeErrors(store)},
+		Key{"", 'L', actions.LoadMock(app.ClientSet, store)},
+		Key{"", gocui.KeyArrowUp, actions.Prev(store)},
+		Key{"", gocui.KeyPgup, actions.PageUp(store)},
+		Key{"", gocui.KeyArrowDown, actions.Next(store)},
+		Key{"", gocui.KeyPgdn, actions.PageDown(store)},
+		Key{"", gocui.KeyEnter, actions.SelectResource(store)},
 	}
 
 	for _, key := range keys {

@@ -35,8 +35,18 @@ func JSONToState(g *gocui.Gui) (*k.State, error) {
 	return s, nil
 }
 
+func PodLineHelper(pod v1.Pod) []string {
+	return []string{
+		pod.Name,
+		columnHelperRestarts(pod),
+		columnHelperAge(pod),
+		columnHelperReady(pod),
+		columnHelperStatus(pod),
+	}
+}
+
 // Column helper: Restarts
-func ColumnHelperRestarts(pod v1.Pod) string {
+func columnHelperRestarts(pod v1.Pod) string {
 	cs := pod.Status.ContainerStatuses
 	r := 0
 	for _, c := range cs {
@@ -46,7 +56,7 @@ func ColumnHelperRestarts(pod v1.Pod) string {
 }
 
 // Column helper: Age
-func ColumnHelperAge(pod v1.Pod) string {
+func columnHelperAge(pod v1.Pod) string {
 	t := pod.CreationTimestamp
 	d := time.Now().Sub(t.Time)
 
@@ -67,13 +77,13 @@ func ColumnHelperAge(pod v1.Pod) string {
 }
 
 // Column helper: Status
-func ColumnHelperStatus(pod v1.Pod) string {
+func columnHelperStatus(pod v1.Pod) string {
 	s := pod.Status
 	return fmt.Sprintf("%s", s.Phase)
 }
 
 // Column helper: Ready
-func ColumnHelperReady(pod v1.Pod) string {
+func columnHelperReady(pod v1.Pod) string {
 	cs := pod.Status.ContainerStatuses
 	cr := 0
 	for _, c := range cs {

@@ -1,10 +1,7 @@
 package k8s
 
 import (
-	"fmt"
 	"io"
-	"strconv"
-	"time"
 
 	"github.com/nii236/k"
 	"k8s.io/client-go/kubernetes"
@@ -21,10 +18,6 @@ type ClientSet interface {
 	GetPodContainers(podName string, namespace string) []string
 	DeletePod(podName string, namespace string) error
 	GetPodContainerLogs(podName string, containerName string, namespace string, o io.Writer) error
-	ColumnHelperRestarts(containerStatuses []v1.ContainerStatus) string
-	ColumnHelperAge(t metav1.Time) string
-	ColumnHelperStatus(s v1.PodStatus) string
-	ColumnHelperReady(containerStatuses []v1.ContainerStatus) string
 }
 
 // RealClientSet contains an embedded Kubernetes client set
@@ -99,49 +92,4 @@ func (cs *RealClientSet) GetPodContainerLogs(podName string, containerName strin
 	readCloser.Close()
 
 	return err
-}
-
-// Column helper: Restarts
-func (cs *RealClientSet) ColumnHelperRestarts(containerStatuses []v1.ContainerStatus) string {
-	r := 0
-	for _, c := range containerStatuses {
-		r = r + int(c.RestartCount)
-	}
-	return strconv.Itoa(r)
-}
-
-// Column helper: Age
-func (cs *RealClientSet) ColumnHelperAge(t metav1.Time) string {
-	d := time.Now().Sub(t.Time)
-
-	if d.Hours() > 1 {
-		if d.Hours() > 24 {
-			ds := float64(d.Hours() / 24)
-			return fmt.Sprintf("%.0fd", ds)
-		} else {
-			return fmt.Sprintf("%.0fh", d.Hours())
-		}
-	} else if d.Minutes() > 1 {
-		return fmt.Sprintf("%.0fm", d.Minutes())
-	} else if d.Seconds() > 1 {
-		return fmt.Sprintf("%.0fs", d.Seconds())
-	}
-
-	return "?"
-}
-
-// Column helper: Status
-func (cs *RealClientSet) ColumnHelperStatus(s v1.PodStatus) string {
-	return fmt.Sprintf("%s", s.Phase)
-}
-
-// Column helper: Ready
-func (cs *RealClientSet) ColumnHelperReady(containerStatuses []v1.ContainerStatus) string {
-	cr := 0
-	for _, c := range containerStatuses {
-		if c.Ready {
-			cr = cr + 1
-		}
-	}
-	return fmt.Sprintf("%d/%d", cr, len(containerStatuses))
 }
