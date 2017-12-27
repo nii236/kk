@@ -7,6 +7,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+// LogrusFileHook is a file hook for logrus
 type LogrusFileHook struct {
 	file      *os.File
 	flag      int
@@ -14,6 +15,7 @@ type LogrusFileHook struct {
 	formatter *logrus.TextFormatter
 }
 
+// NewLogrusFileHook returns a new logrus file hook
 func NewLogrusFileHook(file string, flag int, chmod os.FileMode) (*LogrusFileHook, error) {
 	logFile, err := os.OpenFile(file, flag, chmod)
 	if os.IsNotExist(err) {
@@ -32,7 +34,7 @@ func NewLogrusFileHook(file string, flag int, chmod os.FileMode) (*LogrusFileHoo
 	}}, err
 }
 
-// Fire event
+// Fire will execute when logrus is used
 func (hook *LogrusFileHook) Fire(entry *logrus.Entry) error {
 
 	plainformat, err := hook.formatter.Format(entry)
@@ -46,6 +48,7 @@ func (hook *LogrusFileHook) Fire(entry *logrus.Entry) error {
 	return nil
 }
 
+// Levels are the levels that the logrus file hook supports
 func (hook *LogrusFileHook) Levels() []logrus.Level {
 	return []logrus.Level{
 		logrus.PanicLevel,

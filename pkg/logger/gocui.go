@@ -5,11 +5,13 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+// GocuiHook is the gocui logrus hook
 type GocuiHook struct {
 	g         *gocui.Gui
 	formatter *logrus.TextFormatter
 }
 
+// NewGocuiHook returns a logrus hook that writes to the app's debug
 func NewGocuiHook(g *gocui.Gui) *GocuiHook {
 	return &GocuiHook{g, &logrus.TextFormatter{
 		ForceColors: true,

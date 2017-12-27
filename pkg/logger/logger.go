@@ -7,6 +7,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+// Log wraps the logrus Logger
 type Log struct {
 	*logrus.Logger
 }

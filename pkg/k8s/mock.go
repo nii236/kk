@@ -7,7 +7,6 @@ import (
 
 	"github.com/manveru/faker"
 
-	// "k8s.io/client-go/kubernetes/typed/core/v1/fake"
 	"k8s.io/client-go/kubernetes/fake"
 
 	"github.com/nii236/k/pkg/k"
