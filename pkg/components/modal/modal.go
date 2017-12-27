@@ -1,7 +1,6 @@
 package modal
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/jroimartin/gocui"
@@ -9,7 +8,8 @@ import (
 )
 
 type Widget struct {
-	Size SizeEnum
+	Size  SizeEnum
+	State *k.State
 }
 
 type SizeEnum int
@@ -20,9 +20,10 @@ const (
 	Large
 )
 
-func New(name string, size SizeEnum) *Widget {
+func New(name string, size SizeEnum, initialState *k.State) *Widget {
 	return &Widget{
-		Size: size,
+		Size:  size,
+		State: initialState,
 	}
 }
 
@@ -56,12 +57,7 @@ func (st *Widget) Layout(g *gocui.Gui) error {
 		return err
 	}
 
-	store, err := k.JSONToState(g)
-	if err != nil {
-		fmt.Fprint(v, err)
-		return nil
-	}
-	if store.UI.ActiveScreen != k.ScreenModal {
+	if st.State.UI.ActiveScreen != k.ScreenModal {
 		g.SetViewOnBottom(k.ScreenModal.String())
 		return nil
 	}
@@ -70,9 +66,9 @@ func (st *Widget) Layout(g *gocui.Gui) error {
 	g.SetViewOnTop(k.ScreenModal.String())
 	v.Clear()
 	v.Highlight = true
-	v.Title = store.UI.Modal.Title
-	v.SetCursor(0, store.UI.Modal.Cursor)
-	lines := store.UI.Modal.Lines
+	v.Title = st.State.UI.Modal.Title
+	v.SetCursor(0, st.State.UI.Modal.Cursor)
+	lines := st.State.UI.Modal.Lines
 	v.Write([]byte(strings.Join(lines, "\n")))
 	return nil
 }

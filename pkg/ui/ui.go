@@ -3,15 +3,16 @@ package ui
 import (
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/pkg/errors"
+	"k8s.io/api/core/v1"
 
 	"github.com/jroimartin/gocui"
 	"github.com/nii236/k/pkg/actions"
 	"github.com/nii236/k/pkg/components/debug"
 	"github.com/nii236/k/pkg/components/modal"
 	"github.com/nii236/k/pkg/components/span"
-	"github.com/nii236/k/pkg/components/state"
 	"github.com/nii236/k/pkg/components/table"
 	"github.com/nii236/k/pkg/k"
 	"github.com/nii236/k/pkg/k8s"
@@ -44,12 +45,60 @@ func (app *App) Run() error {
 func init() {
 }
 
+var store = &k.State{
+	UI: &k.UIReducer{
+		ActiveScreen: "Table",
+		Table: &k.TableView{
+			Kind:     "Pods",
+			Selected: "",
+			Filter:   "",
+		},
+		Modal: &k.ModalView{
+			Cursor:   0,
+			Kind:     k.KindNamespaces,
+			Lines:    []string{},
+			Selected: "",
+		},
+		State: &k.StateView{
+			Cursor: 0,
+		},
+		Debug: &k.DebugView{
+			Cursor: 0,
+		},
+	},
+	Entities: &k.EntitiesReducer{
+		Debug: &k.DebugEntities{
+			Lines: []interface{}{},
+		},
+		Pods: &k.PodEntities{
+			Cursor:         1,
+			Loaded:         false,
+			SendingRequest: false,
+			Pods:           &v1.PodList{},
+		},
+		Errors: &k.ErrorEntities{
+			Lines:        []string{},
+			Acknowledged: true,
+		},
+		Namespaces: &k.NamespaceEntities{
+			Cursor:         1,
+			Loaded:         false,
+			SendingRequest: false,
+			Namespaces:     &v1.NamespaceList{},
+		},
+		Resources: &k.ResourceEntities{
+			Resources: []string{k.KindNamespaces.String(), k.KindPods.String()},
+		},
+	},
+}
+
 // New returns a new instance of the TUI
 func New(flags *k.ParsedFlags, clientSet *k8s.RealClientSet) (*App, error) {
 	g, err := gocui.NewGui(gocui.Output256)
 	if err != nil {
 		return nil, err
 	}
+
 	app := &App{
 		ClientSet: clientSet,
 		Gui:       g,
@@ -65,30 +114,31 @@ func New(flags *k.ParsedFlags, clientSet *k8s.RealClientSet) (*App, error) {
 	app.Gui.InputEsc = true
 	app.Gui.SelFgColor = gocui.ColorGreen
 
-	tableView := table.New(k.ScreenTable.String())
-	modalView := modal.New(k.ScreenModal.String(), modal.Large)
-	store := state.New(k.ScreenState.String())
-	debugView := debug.New(k.ScreenDebug.String())
+	tableView := table.New(k.ScreenTable.String(), store)
+	modalView := modal.New(k.ScreenModal.String(), modal.Large, store)
+	debugView := debug.New(k.ScreenDebug.String(), store)
 
 	// svcList := table.New("Services")
 	titleSpan := span.New("Titlebar", "Kubectl TUI", true, span.Top)
-	legendSpan := span.New("Legend", "^C: Exit ^R: Resource, ^N: Filter ^F: Clear Filter", true, span.Bottom)
+	legendSpan := span.New("Legend", "^c: Exit ^r: Resource, ^n: Filter ^f: Clear Filter L: Load Data", true, span.Bottom)
 
-	app.Gui.SetManager(store, tableView, debugView, modalView, titleSpan, legendSpan)
+	app.Gui.SetManager(tableView, debugView, modalView, titleSpan, legendSpan)
 
 	keys := []Key{
 		Key{"", gocui.KeyCtrlC, exit},
 		Key{"", gocui.KeyCtrlR, actions.ToggleResources(store)},
 		Key{"", gocui.KeyCtrlN, actions.ToggleNamespaces(store)},
 		Key{"", gocui.KeyCtrlD, actions.ToggleViewDebug(store)},
-		Key{"", gocui.KeyCtrlB, actions.ToggleState(store)},
 		Key{"", gocui.KeyEsc, actions.AcknowledgeErrors(store)},
-		Key{"", 'L', actions.LoadMock(app.ClientSet, store)},
+		Key{"Table", 'd', actions.TableDelete(store, clientSet)},
+		Key{"", 'D', actions.StateDump(store)},
+		Key{"", 'L', actions.LoadManual(app.ClientSet, store)},
 		Key{"", gocui.KeyArrowUp, actions.Prev(store)},
 		Key{"", gocui.KeyPgup, actions.PageUp(store)},
 		Key{"", gocui.KeyArrowDown, actions.Next(store)},
 		Key{"", gocui.KeyPgdn, actions.PageDown(store)},
-		Key{"", gocui.KeyEnter, actions.HandleEnter(store)},
+		Key{"Modal", gocui.KeyEnter, actions.HandleModalEnter(store)},
+		Key{"Table", gocui.KeyEnter, actions.HandleTableEnter(store)},
 		Key{"Table", gocui.KeyCtrlF, actions.TableClearFilter(store)},
 		Key{"Table", gocui.KeyArrowUp, actions.TableCursorMoveUp(store)},
 		Key{"Table", gocui.KeyArrowDown, actions.TableCursorMoveDown(store)},
@@ -104,17 +154,20 @@ func New(flags *k.ParsedFlags, clientSet *k8s.RealClientSet) (*App, error) {
 		return nil, err
 	}
 
-	// t := time.NewTicker(1 * time.Second)
-	// go func(t *time.Ticker) {
-	// 	for {
-	// 		select {
-	// 		case <-t.C:
-	// 			data := &v1.PodList{}
-	// 			podLoader := LoadPods(g, store, data)
-	// 			g.Update(podLoader)
-	// 		}
-	// 	}
-	// }(t)
+	if flags.AutoRefresh {
+		t := time.NewTicker(time.Duration(flags.RefreshInterval) * time.Second)
+		go func(g2 *gocui.Gui, t *time.Ticker, clientSet k8s.ClientSet, store *k.State) {
+			for {
+				select {
+				case <-t.C:
+
+					podLoader := actions.Load(g2, clientSet, store)
+					g2.Update(podLoader)
+				}
+			}
+		}(g, t, clientSet, store)
+
+	}
 
 	return app, nil
 }

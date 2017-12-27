@@ -46,10 +46,15 @@ func main() {
 			Value:  fmt.Sprintf("%s/.kube/admin.conf", os.Getenv("HOME")),
 		},
 		cli.IntFlag{
-			Name:   "refresh-frequency, f",
+			Name:   "refresh-interval, f",
 			Usage:  "Seconds between updates",
-			EnvVar: "REFRESH_FREQUENCY",
-			Value:  5,
+			EnvVar: "REFRESH_INTERVAL",
+			Value:  1,
+		},
+		cli.BoolFlag{
+			Name:   "auto-refresh, a",
+			Usage:  "Automatic refresh",
+			EnvVar: "AUTO_REFRESH",
 		},
 		cli.BoolFlag{
 			Name:   "production, p",
@@ -60,6 +65,12 @@ func main() {
 			Name:   "debug, d",
 			Usage:  "Debug logging",
 			EnvVar: "DEBUG",
+		},
+		cli.StringFlag{
+			Name:   "debug-file",
+			Usage:  "Debug logging",
+			Value:  "/tmp/debug.log",
+			EnvVar: "DEBUG_FILE",
 		},
 		cli.BoolFlag{
 			Name:   "test, t",

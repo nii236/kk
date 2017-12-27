@@ -159,10 +159,10 @@ func (ur *TableView) SelectResource(g1 *gocui.Gui, resource string) {
 		func(g *gocui.Gui) error {
 			switch resource {
 			case KindNamespaces.String():
-				Debugln("SelectResource Namespace")
+				Debugln(g, "SelectResource Namespace")
 				ur.SetKind(g, KindNamespaces)
 			case KindPods.String():
-				Debugln("SelectResource Pod")
+				Debugln(g, "SelectResource Pod")
 				ur.SetKind(g, KindPods)
 			}
 			return nil

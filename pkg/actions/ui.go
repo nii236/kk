@@ -2,121 +2,120 @@ package actions
 
 import (
 	"github.com/jroimartin/gocui"
-	"github.com/nii236/k/pkg/components/state"
 	"github.com/nii236/k/pkg/k"
 )
 
 // Global action: Toggle debug
-func ToggleViewDebug(s *state.Widget) func(g *gocui.Gui, _ *gocui.View) error {
+func ToggleViewDebug(s *k.State) func(g *gocui.Gui, _ *gocui.View) error {
 	return func(g *gocui.Gui, v2 *gocui.View) error {
-		if s.State.UI.ActiveScreen == k.ScreenDebug {
-			s.State.UI.SetTableActive(g)
+		if s.UI.ActiveScreen == k.ScreenDebug {
+			s.UI.SetTableActive(g)
 			return nil
 		}
-		s.State.UI.SetDebugActive(g)
+		s.UI.SetDebugActive(g)
 		return nil
 
 	}
 }
 
-func ShowErrors(s *state.Widget) func(g1 *gocui.Gui, _ *gocui.View) error {
+func ShowErrors(s *k.State) func(g1 *gocui.Gui, _ *gocui.View) error {
 	return func(g *gocui.Gui, v2 *gocui.View) error {
-		lines := s.State.Entities.Errors.Lines
-		s.State.UI.SetModalActive(g)
-		s.State.UI.Modal.SetLines(g, lines)
-		s.State.UI.Modal.SetTitle(g, "Errors")
+		lines := s.Entities.Errors.Lines
+		s.UI.SetModalActive(g)
+		s.UI.Modal.SetLines(g, lines)
+		s.UI.Modal.SetTitle(g, "Errors")
 		return nil
 	}
 }
 
-func HideErrors(s *state.Widget) func(g1 *gocui.Gui, _ *gocui.View) error {
+func HideErrors(s *k.State) func(g1 *gocui.Gui, _ *gocui.View) error {
 	return func(g *gocui.Gui, v2 *gocui.View) error {
-		s.State.UI.SetTableActive(g)
+		s.UI.SetTableActive(g)
 		return nil
 	}
 }
 
-func ToggleState(s *state.Widget) func(g1 *gocui.Gui, _ *gocui.View) error {
+func ToggleState(s *k.State) func(g1 *gocui.Gui, _ *gocui.View) error {
 	return func(g *gocui.Gui, v2 *gocui.View) error {
-		if s.State.UI.ActiveScreen == k.ScreenState {
-			s.State.UI.SetTableActive(g)
+		if s.UI.ActiveScreen == k.ScreenState {
+			s.UI.SetTableActive(g)
 			return nil
 		}
-		s.State.UI.SetStateActive(g)
+		s.UI.SetStateActive(g)
 		return nil
 	}
 }
 
-func ToggleResources(s *state.Widget) func(g1 *gocui.Gui, _ *gocui.View) error {
+func ToggleResources(s *k.State) func(g1 *gocui.Gui, _ *gocui.View) error {
 	return func(g *gocui.Gui, v2 *gocui.View) error {
-		if s.State.UI.ActiveScreen == k.ScreenModal {
-			s.State.UI.SetTableActive(g)
+		if s.UI.ActiveScreen == k.ScreenModal {
+			s.UI.SetTableActive(g)
 			return nil
 		}
-		s.State.Entities.Debug.Append(g, "Toggle screen to: "+"resources")
+		k.Debugln(g, "Toggle: resources")
 		lines := []string{k.KindPods.String(), k.KindNamespaces.String()}
-		s.State.UI.SetModalActive(g)
-		s.State.UI.Modal.SetModalKind(g, k.KindResources)
-		s.State.UI.Modal.SetLines(g, lines)
-		s.State.UI.Modal.SetTitle(g, "Resources")
+		s.UI.SetModalActive(g)
+		s.UI.Modal.SetModalKind(g, k.KindResources)
+		s.UI.Modal.SetLines(g, lines)
+		s.UI.Modal.SetTitle(g, "Resources")
 		return nil
 
 	}
 }
-func ToggleNamespaces(s *state.Widget) func(g1 *gocui.Gui, _ *gocui.View) error {
+func ToggleNamespaces(s *k.State) func(g1 *gocui.Gui, _ *gocui.View) error {
 	return func(g *gocui.Gui, v2 *gocui.View) error {
-		if s.State.UI.ActiveScreen == k.ScreenModal {
-			s.State.UI.SetTableActive(g)
+		if s.UI.ActiveScreen == k.ScreenModal {
+			s.UI.SetTableActive(g)
 			return nil
 		}
-		s.State.Entities.Debug.Append(g, "Toggle screen to: "+"namespaces")
+		k.Debugln(g, "Toggle: namespaces")
 		lines := []string{}
-		for _, ns := range s.State.Entities.Namespaces.Namespaces.Items {
+		for _, ns := range s.Entities.Namespaces.Namespaces.Items {
 			lines = append(lines, ns.ObjectMeta.Name)
 		}
-		s.State.UI.SetModalActive(g)
-		s.State.UI.Modal.SetModalKind(g, k.KindNamespaces)
-		s.State.UI.Modal.SetLines(g, lines)
-		s.State.UI.Modal.SetTitle(g, "Namespaces")
+		s.UI.SetModalActive(g)
+		s.UI.Modal.SetModalKind(g, k.KindNamespaces)
+		s.UI.Modal.SetLines(g, lines)
+		s.UI.Modal.SetTitle(g, "Namespaces")
 		return nil
 	}
 }
 
-func PageUp(s *state.Widget) func(g1 *gocui.Gui, _ *gocui.View) error {
+func PageUp(s *k.State) func(g1 *gocui.Gui, _ *gocui.View) error {
 	return func(g *gocui.Gui, _ *gocui.View) error {
-		s.State.Entities.Debug.Append(g, "Page Up")
-		s.State.UI.CursorMove(g, -10)
+		k.Debugln(g, "Page Up")
+		s.UI.CursorMove(g, -10)
 		return nil
 	}
 }
 
-func Prev(s *state.Widget) func(g1 *gocui.Gui, _ *gocui.View) error {
+func Prev(s *k.State) func(g1 *gocui.Gui, _ *gocui.View) error {
 	return func(g *gocui.Gui, _ *gocui.View) error {
-		s.State.Entities.Debug.Append(g, "Up")
-		s.State.UI.CursorMove(g, -1)
+		k.Debugln(g, "Up")
+		s.UI.CursorMove(g, -1)
 		return nil
 	}
 }
 
-func PageDown(s *state.Widget) func(g1 *gocui.Gui, _ *gocui.View) error {
+func PageDown(s *k.State) func(g1 *gocui.Gui, _ *gocui.View) error {
 	return func(g *gocui.Gui, _ *gocui.View) error {
-		s.State.Entities.Debug.Append(g, "Page Down")
-		s.State.UI.CursorMove(g, 10)
+		k.Debugln(g, "Page Down")
+		s.UI.CursorMove(g, 10)
 		return nil
 	}
 }
 
-func Next(s *state.Widget) func(g1 *gocui.Gui, _ *gocui.View) error {
+func Next(s *k.State) func(g1 *gocui.Gui, _ *gocui.View) error {
 	return func(g *gocui.Gui, _ *gocui.View) error {
-		s.State.Entities.Debug.Append(g, "Down")
-		s.State.UI.CursorMove(g, 1)
+		k.Debugln(g, "Down")
+		s.UI.CursorMove(g, 1)
 		return nil
 	}
 }
-func AcknowledgeErrors(s *state.Widget) func(g1 *gocui.Gui, _ *gocui.View) error {
+func AcknowledgeErrors(s *k.State) func(g1 *gocui.Gui, _ *gocui.View) error {
 	return func(g *gocui.Gui, _ *gocui.View) error {
-		s.State.Entities.Errors.Acknowledge(g)
-		s.State.UI.SetTableActive(g)
+		s.Entities.Errors.Acknowledge(g)
+		s.UI.SetTableActive(g)
 		return nil
 	}
 }

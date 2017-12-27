@@ -9,13 +9,15 @@ import (
 )
 
 type Widget struct {
-	Name string
+	Name  string
+	State *k.State
 }
 
 //ss
-func New(name string) *Widget {
+func New(name string, initialState *k.State) *Widget {
 	return &Widget{
-		Name: name,
+		Name:  name,
+		State: initialState,
 	}
 }
 
@@ -27,12 +29,7 @@ func (st *Widget) Layout(g *gocui.Gui) error {
 		return err
 	}
 
-	store, err := k.JSONToState(g)
-	if err != nil {
-		fmt.Fprint(v, err)
-		return nil
-	}
-	if store.UI.ActiveScreen != k.ScreenDebug {
+	if st.State.UI.ActiveScreen != k.ScreenDebug {
 		g.SetViewOnBottom(k.ScreenDebug.String())
 		return nil
 	}
@@ -40,10 +37,9 @@ func (st *Widget) Layout(g *gocui.Gui) error {
 	g.SetViewOnTop(k.ScreenDebug.String())
 	g.SetCurrentView(k.ScreenDebug.String())
 	v.Title = "Debug"
-	v.Clear()
 	v.Autoscroll = true
 	lines := []string{}
-	for _, el := range store.Entities.Debug.Lines {
+	for _, el := range st.State.Entities.Debug.Lines {
 		lines = append(lines, el.(string))
 	}
 
