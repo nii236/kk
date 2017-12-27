@@ -1,4 +1,6 @@
+
 # K
+[![](https://godoc.org/github.com/nii236/k?status.svg)](http://godoc.org/github.com/nii236/k)
 
 I got sick of typing the same `kubectl` commands over and over again so here is my simplified TUI wrapper, K.
 
