@@ -5,7 +5,7 @@ import (
 	"github.com/nii236/k/pkg/k"
 )
 
-// Global action: Toggle debug
+// ToggleViewDebug returns a function that will toggle the debug view
 func ToggleViewDebug(s *k.State) func(g *gocui.Gui, _ *gocui.View) error {
 	return func(g *gocui.Gui, v2 *gocui.View) error {
 		if s.UI.ActiveScreen == k.ScreenDebug {
@@ -18,23 +18,7 @@ func ToggleViewDebug(s *k.State) func(g *gocui.Gui, _ *gocui.View) error {
 	}
 }
 
-func ShowErrors(s *k.State) func(g1 *gocui.Gui, _ *gocui.View) error {
-	return func(g *gocui.Gui, v2 *gocui.View) error {
-		lines := s.Entities.Errors.Lines
-		s.UI.SetActiveScreen(g, k.ScreenModal)
-		s.UI.Modal.SetLines(g, lines)
-		s.UI.Modal.SetTitle(g, "Errors")
-		return nil
-	}
-}
-
-func HideErrors(s *k.State) func(g1 *gocui.Gui, _ *gocui.View) error {
-	return func(g *gocui.Gui, v2 *gocui.View) error {
-		s.UI.SetActiveScreen(g, k.ScreenTable)
-		return nil
-	}
-}
-
+// ToggleResources returns a function that will toggle the resources modal
 func ToggleResources(s *k.State) func(g1 *gocui.Gui, _ *gocui.View) error {
 	return func(g *gocui.Gui, v2 *gocui.View) error {
 		if s.UI.ActiveScreen == k.ScreenModal {
@@ -53,6 +37,8 @@ func ToggleResources(s *k.State) func(g1 *gocui.Gui, _ *gocui.View) error {
 
 	}
 }
+
+// ToggleNamespaces returns a function that will toggle the namespaces modal
 func ToggleNamespaces(s *k.State) func(g1 *gocui.Gui, _ *gocui.View) error {
 	return func(g *gocui.Gui, v2 *gocui.View) error {
 		if s.UI.ActiveScreen == k.ScreenModal {
@@ -74,6 +60,7 @@ func ToggleNamespaces(s *k.State) func(g1 *gocui.Gui, _ *gocui.View) error {
 	}
 }
 
+// PageUp returns a function that will toggle the debug view
 func PageUp(s *k.State) func(g1 *gocui.Gui, _ *gocui.View) error {
 	return func(g *gocui.Gui, _ *gocui.View) error {
 		s.UI.CursorMove(g, -10)
@@ -81,6 +68,7 @@ func PageUp(s *k.State) func(g1 *gocui.Gui, _ *gocui.View) error {
 	}
 }
 
+// Prev returns a function that will toggle the debug view
 func Prev(s *k.State) func(g1 *gocui.Gui, _ *gocui.View) error {
 	return func(g *gocui.Gui, _ *gocui.View) error {
 		s.UI.CursorMove(g, -1)
@@ -88,6 +76,7 @@ func Prev(s *k.State) func(g1 *gocui.Gui, _ *gocui.View) error {
 	}
 }
 
+// PageDown returns a function that will toggle the debug view
 func PageDown(s *k.State) func(g1 *gocui.Gui, _ *gocui.View) error {
 	return func(g *gocui.Gui, _ *gocui.View) error {
 		s.UI.CursorMove(g, 10)
@@ -95,12 +84,15 @@ func PageDown(s *k.State) func(g1 *gocui.Gui, _ *gocui.View) error {
 	}
 }
 
+// Next returns a function that will toggle the debug view
 func Next(s *k.State) func(g1 *gocui.Gui, _ *gocui.View) error {
 	return func(g *gocui.Gui, _ *gocui.View) error {
 		s.UI.CursorMove(g, 1)
 		return nil
 	}
 }
+
+// AcknowledgeErrors returns a function that will toggle the debug view}
 func AcknowledgeErrors(s *k.State) func(g1 *gocui.Gui, _ *gocui.View) error {
 	return func(g *gocui.Gui, _ *gocui.View) error {
 		s.Entities.Errors.Acknowledge(g)

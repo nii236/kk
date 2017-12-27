@@ -6,6 +6,7 @@ import (
 	"github.com/nii236/k/pkg/k8s"
 )
 
+// LoadAuto is function factory for the auto refresh for data
 func LoadAuto(client k8s.ClientSet, s *k.State) func(g *gocui.Gui, _ *gocui.View) error {
 	return func(g *gocui.Gui, _ *gocui.View) error {
 		// k.Debugln("Load: Auto")
@@ -15,6 +16,7 @@ func LoadAuto(client k8s.ClientSet, s *k.State) func(g *gocui.Gui, _ *gocui.View
 	}
 }
 
+// LoadManual is function factory for the auto refresh for data
 func LoadManual(client k8s.ClientSet, s *k.State) func(g *gocui.Gui, _ *gocui.View) error {
 	return func(g *gocui.Gui, _ *gocui.View) error {
 		k.Debugln("Load: Manual")

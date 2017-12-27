@@ -5,6 +5,7 @@ import (
 	"github.com/nii236/k/pkg/k"
 )
 
+// TableClearFilter returns a function that will clear the filters for entities displayed in a table
 func TableClearFilter(s *k.State) func(g1 *gocui.Gui, _ *gocui.View) error {
 	return func(g *gocui.Gui, v2 *gocui.View) error {
 		k.Debugln("Table: Clear filter")
@@ -14,6 +15,7 @@ func TableClearFilter(s *k.State) func(g1 *gocui.Gui, _ *gocui.View) error {
 	}
 }
 
+// TableCursorMove returns a function that will move cursors for entities displayed in a table
 func TableCursorMove(s *k.State, delta int) func(g1 *gocui.Gui, _ *gocui.View) error {
 	return func(g *gocui.Gui, _ *gocui.View) error {
 		switch s.UI.Table.Kind {

@@ -26,6 +26,7 @@ type App struct {
 	Gui       *gocui.Gui
 }
 
+// Key is a keybinding for the app
 type Key struct {
 	viewname string
 	key      interface{}
@@ -128,7 +129,7 @@ func New(flags *k.ParsedFlags, clientSet *k8s.RealClientSet) (*App, error) {
 	debugView := debug.New(k.ScreenDebug.String(), store)
 
 	// svcList := table.New("Services")
-	titleSpan := span.New("Titlebar", "Kubectl TUI", true, span.Top, store)
+	titleSpan := span.New("Title", "Kubectl TUI", true, span.Top, store)
 	legendSpan := span.New("Legend", "", true, span.Bottom, store)
 
 	app.Gui.SetManager(tableView, debugView, modalView, titleSpan, legendSpan)
@@ -138,7 +139,8 @@ func New(flags *k.ParsedFlags, clientSet *k8s.RealClientSet) (*App, error) {
 		Key{"", gocui.KeyCtrlR, actions.ToggleResources(store)},
 		Key{"", gocui.KeyCtrlN, actions.ToggleNamespaces(store)},
 		Key{"", gocui.KeyCtrlD, actions.ToggleViewDebug(store)},
-		Key{"", gocui.KeyEsc, actions.AcknowledgeErrors(store)},
+		Key{"Debug", gocui.KeyEsc, actions.HandleDebugEsc(store)},
+		Key{"Modal", gocui.KeyEsc, actions.HandleModalEsc(store)},
 		Key{"Table", 'd', actions.HandleTableDelete(store, clientSet)},
 		Key{"", 'D', actions.StateDump(store)},
 		Key{"", 'L', actions.LoadManual(app.ClientSet, store)},

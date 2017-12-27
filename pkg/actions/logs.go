@@ -12,6 +12,7 @@ import (
 	"k8s.io/api/core/v1"
 )
 
+// FetchContainers is a function factory that returns a function that will fetch containers for a pod
 func FetchContainers(s *k.State, c k8s.ClientSet) func(g1 *gocui.Gui, _ *gocui.View) error {
 	return func(g *gocui.Gui, v *gocui.View) error {
 		if s.UI.Table.Kind == k.KindTablePods {
@@ -46,6 +47,7 @@ func FetchContainers(s *k.State, c k8s.ClientSet) func(g1 *gocui.Gui, _ *gocui.V
 	}
 }
 
+// FetchLogs is a function factory that will return a function that fetches logs for a container
 func FetchLogs(s *k.State, c k8s.ClientSet) func(g1 *gocui.Gui, _ *gocui.View) error {
 	return func(g *gocui.Gui, v *gocui.View) error {
 		k.Debugln("logs: Fetch logs for container")

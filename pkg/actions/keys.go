@@ -7,6 +7,7 @@ import (
 	"k8s.io/api/core/v1"
 )
 
+// HandleModalEnter runs when pressing enter while focused on a Modal
 func HandleModalEnter(s *k.State, c k8s.ClientSet) func(g1 *gocui.Gui, _ *gocui.View) error {
 	return func(g *gocui.Gui, v2 *gocui.View) error {
 		k.Debugln("Modal: Pressed enter")
@@ -35,6 +36,39 @@ func HandleModalEnter(s *k.State, c k8s.ClientSet) func(g1 *gocui.Gui, _ *gocui.
 	}
 }
 
+// HandleDebugEsc runs when pressing esc while focused on a Modal
+func HandleDebugEsc(s *k.State) func(g1 *gocui.Gui, _ *gocui.View) error {
+	return func(g *gocui.Gui, v2 *gocui.View) error {
+		k.Debugln("Modal: Pressed esc")
+		s.UI.SetActiveScreen(g, k.ScreenTable)
+
+		return nil
+	}
+}
+
+// HandleModalEsc runs when pressing esc while focused on a Modal
+func HandleModalEsc(s *k.State) func(g1 *gocui.Gui, _ *gocui.View) error {
+	return func(g *gocui.Gui, v2 *gocui.View) error {
+		k.Debugln("Modal: Pressed esc")
+		if s.UI.ActiveScreen == k.ScreenModal {
+			switch s.UI.Modal.Kind {
+			case k.KindModalResources:
+				s.UI.SetActiveScreen(g, k.ScreenTable)
+			case k.KindModalNamespaces:
+				s.UI.SetActiveScreen(g, k.ScreenTable)
+			case k.KindModalSelectContainer:
+				s.UI.SetActiveScreen(g, k.ScreenTable)
+			case k.KindModalContainerLogs:
+				s.UI.SetActiveScreen(g, k.ScreenTable)
+			default:
+				k.Errorln("Unsupported Modal Kind: " + s.UI.Modal.Kind)
+			}
+		}
+		return nil
+	}
+}
+
+// HandleTableEnter runs when pressing enter while focused on a Table
 func HandleTableEnter(s *k.State, c k8s.ClientSet) func(g1 *gocui.Gui, _ *gocui.View) error {
 	return func(g *gocui.Gui, v2 *gocui.View) error {
 		k.Debugln("Table: pressed enter")
@@ -46,6 +80,7 @@ func HandleTableEnter(s *k.State, c k8s.ClientSet) func(g1 *gocui.Gui, _ *gocui.
 	}
 }
 
+// HandleTableDelete runs when pressing delete while focused on a Table
 func HandleTableDelete(s *k.State, c k8s.ClientSet) func(g1 *gocui.Gui, _ *gocui.View) error {
 	return func(g *gocui.Gui, v2 *gocui.View) error {
 		k.Debugln("Table: Delete " + s.Entities.Pods.Selected)

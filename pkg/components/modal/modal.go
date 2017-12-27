@@ -74,15 +74,8 @@ func (st *Widget) Layout(g *gocui.Gui) error {
 	} else {
 		v.SetOrigin(0, st.State.UI.Modal.Cursor-vy+1)
 	}
-	k.Debugln("vy", vy)
-	k.Debugln("st.State.UI.Modal.Curso", st.State.UI.Modal.Cursor)
-	k.Debugln("height", vy)
 	// v.SetOrigin(0, st.State.UI.Modal.Cursor-5)
 	lines := st.State.UI.Modal.Lines
 	v.Write([]byte(strings.Join(lines, "\n")))
-	ox, oy := v.Origin()
-	k.Debugln("Origin:", ox, oy)
-	cx, cy := v.Cursor()
-	k.Debugln("Cursor:", cx, cy)
 	return nil
 }

@@ -23,25 +23,20 @@ type StateView struct {
 func (ur *UIReducer) CursorMove(g1 *gocui.Gui, delta int) {
 	g1.Update(
 		func(g *gocui.Gui) error {
-			switch ur.ActiveScreen {
-			case ScreenDebug:
-				ur.Debug.Cursor = ur.Debug.Cursor + delta
-				if ur.Debug.Cursor < 0 {
-					ur.Debug.Cursor = 0
-				}
-			case ScreenModal:
-				ur.Modal.Cursor = ur.Modal.Cursor + delta
-				if ur.Modal.Cursor < 0 {
-					ur.Modal.Cursor = 0
-				}
-				if ur.Modal.Cursor > len(ur.Modal.Lines)-1 {
-					ur.Modal.Cursor = len(ur.Modal.Lines) - 1
-				}
-				if len(ur.Modal.Lines) > 0 {
-					ur.Modal.Selected = ur.Modal.Lines[ur.Modal.Cursor]
-				}
-
+			ur.Modal.Cursor = ur.Modal.Cursor + delta
+			switch {
+			case ur.Modal.Cursor < 0:
+				ur.Modal.Cursor = 0
+			case ur.Modal.Cursor > len(ur.Modal.Lines)-1:
+				ur.Modal.Cursor = len(ur.Modal.Lines) - 1
+			default:
+				Debugln("CursorMove: Unsupported Screen", ur.ActiveScreen)
+				return nil
 			}
+			if len(ur.Modal.Lines) > 0 {
+				ur.Modal.Selected = ur.Modal.Lines[ur.Modal.Cursor]
+			}
+
 			return nil
 		},
 	)
