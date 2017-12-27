@@ -31,15 +31,16 @@ COMMANDS:
      help, h  Shows a list of commands or help for one command
 
 GLOBAL OPTIONS:
-   --kubeconfig-path value, -c value   Kubeconfig path (Uses $HOME) (default: "/home/nii236/.kube/admin.conf") [$KUBECONFIG_PATH]
-   --refresh-interval value, -f value  Seconds between updates (default: 1) [$REFRESH_INTERVAL]
-   --auto-refresh, -a                  Automatic refresh [$AUTO_REFRESH]
-   --production, -p                    Production mode [$PRODUCTION]
-   --debug, -d                         Debug logging [$DEBUG]
-   --debug-file value                  Debug logging (default: "/tmp/debug.log") [$DEBUG_FILE]
-   --test, -t                          Use the K8S mock client [$TEST]
-   --help, -h                          show help
-   --version, -v                       print the version
+   --kubeconfig-path value, -c value  Kubeconfig path (Uses $HOME) (default: "/Users/nii236/.kube/admin.conf") [$KUBECONFIG_PATH]
+   --refresh-interval value           Seconds between updates (default: 1) [$REFRESH_INTERVAL]
+   --auto-refresh, -a                 Automatic refresh [$AUTO_REFRESH]
+   --production, -p                   Production mode [$PRODUCTION]
+   --debug, -d                        Debug logging [$DEBUG]
+   --log-to-file, -f                  Log to file [$LOG_TO_FILE]
+   --log-file-path value              File to log to (default: "/tmp/debug.log") [$LOG_FILE_PATH]
+   --test, -t                         Use the K8S mock client [$TEST]
+   --help, -h                         show help
+   --version, -v                      print the version
 ```
 
 # Screenshots
