@@ -7,20 +7,15 @@ import (
 	"github.com/urfave/cli"
 )
 
-var PodListHeaders = []string{"Namespace", "Name", "Restarts", "Age", "Ready", "Status"}
-var NamespaceListHeaders = []string{"Name"}
+type ModalKind string
+type TableKind string
 
-type Kind string
-
-func (k Kind) String() string {
+func (k ModalKind) String() string {
 	return string(k)
 }
-
-const (
-	KindPods       Kind = "Pods"
-	KindNamespaces Kind = "Namespaces"
-	KindResources  Kind = "Resources"
-)
+func (k TableKind) String() string {
+	return string(k)
+}
 
 type Screen string
 
@@ -38,15 +33,6 @@ func (s Screen) String() string {
 type State struct {
 	UI       *UIReducer
 	Entities *EntitiesReducer
-}
-
-func (s *State) JSONString() (string, error) {
-	b, err := json.MarshalIndent(s, "", "    ")
-	if err != nil {
-		return "", err
-	}
-
-	return string(b), nil
 }
 
 // ParsedFlags will contain the config for the app
@@ -74,4 +60,13 @@ func (flags *ParsedFlags) Parse(c *cli.Context) error {
 		return errors.New("Error parsing flags")
 	}
 	return nil
+}
+
+func (s *State) JSONString() (string, error) {
+	b, err := json.MarshalIndent(s, "", "    ")
+	if err != nil {
+		return "", err
+	}
+
+	return string(b), nil
 }

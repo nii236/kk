@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/pkg/errors"
+	appsv1 "k8s.io/api/apps/v1beta1"
 	"k8s.io/api/core/v1"
 
 	"github.com/jroimartin/gocui"
@@ -16,6 +17,7 @@ import (
 	"github.com/nii236/k/pkg/components/table"
 	"github.com/nii236/k/pkg/k"
 	"github.com/nii236/k/pkg/k8s"
+	"github.com/nii236/k/pkg/logger"
 )
 
 // App contains the TUI
@@ -42,9 +44,6 @@ func (app *App) Run() error {
 	return nil
 }
 
-func init() {
-}
-
 var store = &k.State{
 	UI: &k.UIReducer{
 		ActiveScreen: "Table",
@@ -55,9 +54,10 @@ var store = &k.State{
 		},
 		Modal: &k.ModalView{
 			Cursor:   0,
-			Kind:     k.KindNamespaces,
+			Kind:     k.KindModalNamespaces,
 			Lines:    []string{},
 			Selected: "",
+			Size:     k.ModalSizeLarge,
 		},
 		State: &k.StateView{
 			Cursor: 0,
@@ -70,9 +70,15 @@ var store = &k.State{
 		Debug: &k.DebugEntities{
 			Lines: []interface{}{},
 		},
+		Deployments: &k.DeploymentEntities{
+			Cursor:         0,
+			Size:           0,
+			SendingRequest: false,
+			Deployments:    &appsv1.DeploymentList{},
+		},
 		Pods: &k.PodEntities{
-			Cursor:         1,
-			Loaded:         false,
+			Cursor:         0,
+			Size:           0,
 			SendingRequest: false,
 			Pods:           &v1.PodList{},
 		},
@@ -82,12 +88,12 @@ var store = &k.State{
 		},
 		Namespaces: &k.NamespaceEntities{
 			Cursor:         1,
-			Loaded:         false,
+			Size:           0,
 			SendingRequest: false,
 			Namespaces:     &v1.NamespaceList{},
 		},
 		Resources: &k.ResourceEntities{
-			Resources: []string{k.KindNamespaces.String(), k.KindPods.String()},
+			Resources: []string{k.KindTableNamespaces.String(), k.KindTablePods.String(), k.KindTableDeployments.String()},
 		},
 	},
 }
@@ -98,6 +104,9 @@ func New(flags *k.ParsedFlags, clientSet *k8s.RealClientSet) (*App, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	log := logger.Get()
+	log.AddHook(logger.NewGocuiHook(g))
 
 	app := &App{
 		ClientSet: clientSet,
@@ -115,7 +124,7 @@ func New(flags *k.ParsedFlags, clientSet *k8s.RealClientSet) (*App, error) {
 	app.Gui.SelFgColor = gocui.ColorGreen
 
 	tableView := table.New(k.ScreenTable.String(), store)
-	modalView := modal.New(k.ScreenModal.String(), modal.Large, store)
+	modalView := modal.New(k.ScreenModal.String(), store)
 	debugView := debug.New(k.ScreenDebug.String(), store)
 
 	// svcList := table.New("Services")
@@ -130,18 +139,21 @@ func New(flags *k.ParsedFlags, clientSet *k8s.RealClientSet) (*App, error) {
 		Key{"", gocui.KeyCtrlN, actions.ToggleNamespaces(store)},
 		Key{"", gocui.KeyCtrlD, actions.ToggleViewDebug(store)},
 		Key{"", gocui.KeyEsc, actions.AcknowledgeErrors(store)},
-		Key{"Table", 'd', actions.TableDelete(store, clientSet)},
+		Key{"Table", 'd', actions.HandleTableDelete(store, clientSet)},
 		Key{"", 'D', actions.StateDump(store)},
 		Key{"", 'L', actions.LoadManual(app.ClientSet, store)},
 		Key{"", gocui.KeyArrowUp, actions.Prev(store)},
 		Key{"", gocui.KeyPgup, actions.PageUp(store)},
 		Key{"", gocui.KeyArrowDown, actions.Next(store)},
 		Key{"", gocui.KeyPgdn, actions.PageDown(store)},
-		Key{"Modal", gocui.KeyEnter, actions.HandleModalEnter(store)},
-		Key{"Table", gocui.KeyEnter, actions.HandleTableEnter(store)},
+		Key{"Modal", gocui.KeyEnter, actions.HandleModalEnter(store, clientSet)},
+		Key{"Table", gocui.KeyCtrlL, actions.FetchContainers(store, clientSet)},
+		Key{"Table", gocui.KeyEnter, actions.HandleTableEnter(store, clientSet)},
 		Key{"Table", gocui.KeyCtrlF, actions.TableClearFilter(store)},
-		Key{"Table", gocui.KeyArrowUp, actions.TableCursorMoveUp(store)},
-		Key{"Table", gocui.KeyArrowDown, actions.TableCursorMoveDown(store)},
+		Key{"Table", gocui.KeyArrowUp, actions.TableCursorMove(store, -1)},
+		Key{"Table", gocui.KeyArrowDown, actions.TableCursorMove(store, 1)},
+		Key{"Table", gocui.KeyPgup, actions.TableCursorMove(store, -5)},
+		Key{"Table", gocui.KeyPgdn, actions.TableCursorMove(store, 5)},
 	}
 
 	for _, key := range keys {
@@ -161,8 +173,12 @@ func New(flags *k.ParsedFlags, clientSet *k8s.RealClientSet) (*App, error) {
 				select {
 				case <-t.C:
 
-					podLoader := actions.Load(g2, clientSet, store)
-					g2.Update(podLoader)
+					podLoader := actions.LoadAuto(clientSet, store)
+					tableView, err := g2.View("Table")
+					if err != nil {
+						return
+					}
+					podLoader(g2, tableView)
 				}
 			}
 		}(g, t, clientSet, store)

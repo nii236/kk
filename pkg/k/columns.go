@@ -5,22 +5,47 @@ import (
 	"strconv"
 	"time"
 
-	v1 "k8s.io/api/core/v1"
+	appsv1 "k8s.io/api/apps/v1beta1"
+	corev1 "k8s.io/api/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func PodLineHelper(pod v1.Pod) []string {
+var PodListHeaders = []string{"Namespace", "Name", "Restarts", "Age", "Ready", "Status"}
+var NamespaceListHeaders = []string{"Status", "Name", "Age"}
+var DeploymentListHeaders = []string{"Namespace", "Name", "Pods", "Age"}
+
+func DeploymentLineHelper(deployment appsv1.Deployment) []string {
+	pods := fmt.Sprintf("%d/%d", deployment.Status.ReadyReplicas, deployment.Status.Replicas)
+	return []string{
+		deployment.Namespace,
+		deployment.Name,
+		pods,
+		columnHelperAge(deployment.ObjectMeta),
+	}
+}
+
+func NamespaceLineHelper(ns corev1.Namespace) []string {
+	status := fmt.Sprintf("%s", ns.Status.Phase)
+	return []string{
+		status,
+		ns.Name,
+		columnHelperAge(ns.ObjectMeta),
+	}
+}
+
+func PodLineHelper(pod corev1.Pod) []string {
 	return []string{
 		pod.Namespace,
 		pod.Name,
 		columnHelperRestarts(pod),
-		columnHelperAge(pod),
+		columnHelperAge(pod.ObjectMeta),
 		columnHelperReady(pod),
 		columnHelperStatus(pod),
 	}
 }
 
 // Column helper: Restarts
-func columnHelperRestarts(pod v1.Pod) string {
+func columnHelperRestarts(pod corev1.Pod) string {
 	cs := pod.Status.ContainerStatuses
 	r := 0
 	for _, c := range cs {
@@ -30,8 +55,8 @@ func columnHelperRestarts(pod v1.Pod) string {
 }
 
 // Column helper: Age
-func columnHelperAge(pod v1.Pod) string {
-	t := pod.CreationTimestamp
+func columnHelperAge(meta metav1.ObjectMeta) string {
+	t := meta.CreationTimestamp
 	d := time.Now().Sub(t.Time)
 
 	if d.Hours() > 1 {
@@ -51,13 +76,13 @@ func columnHelperAge(pod v1.Pod) string {
 }
 
 // Column helper: Status
-func columnHelperStatus(pod v1.Pod) string {
+func columnHelperStatus(pod corev1.Pod) string {
 	s := pod.Status
 	return fmt.Sprintf("%s", s.Phase)
 }
 
 // Column helper: Ready
-func columnHelperReady(pod v1.Pod) string {
+func columnHelperReady(pod corev1.Pod) string {
 	cs := pod.Status.ContainerStatuses
 	cr := 0
 	for _, c := range cs {

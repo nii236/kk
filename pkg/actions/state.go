@@ -11,7 +11,7 @@ func StateDump(s *k.State) func(g1 *gocui.Gui, _ *gocui.View) error {
 		if err != nil {
 			return err
 		}
-		k.Debugln(g, js)
+		k.Debugln(js)
 		return nil
 	}
 }

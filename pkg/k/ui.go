@@ -20,20 +20,6 @@ type StateView struct {
 	Cursor int
 }
 
-type TableView struct {
-	Selected string
-	Filter   string
-	Kind     Kind
-}
-
-type ModalView struct {
-	Title    string
-	Kind     Kind
-	Cursor   int
-	Selected string
-	Lines    []string
-}
-
 func (ur *UIReducer) CursorMove(g1 *gocui.Gui, delta int) {
 	g1.Update(
 		func(g *gocui.Gui) error {
@@ -65,108 +51,11 @@ func (ur *UIReducer) CursorMove(g1 *gocui.Gui, delta int) {
 	)
 }
 
-func (ur *UIReducer) SetTableActive(g1 *gocui.Gui) {
+func (ur *UIReducer) SetActiveScreen(g1 *gocui.Gui, screen Screen) {
 	g1.Update(
 		func(g *gocui.Gui) error {
-			ur.ActiveScreen = ScreenTable
+			ur.ActiveScreen = screen
 			return nil
-		},
-	)
-}
-
-func (ur *UIReducer) SetStateActive(g1 *gocui.Gui) {
-	g1.Update(
-		func(g *gocui.Gui) error {
-			ur.ActiveScreen = ScreenState
-			return nil
-		},
-	)
-
-}
-func (ur *UIReducer) SetDebugActive(g1 *gocui.Gui) {
-	g1.Update(
-		func(g *gocui.Gui) error {
-			ur.ActiveScreen = ScreenDebug
-			return nil
-		},
-	)
-}
-func (ur *UIReducer) SetModalActive(g1 *gocui.Gui) {
-	g1.Update(
-		func(g *gocui.Gui) error {
-			ur.ActiveScreen = ScreenModal
-			return nil
-		},
-	)
-}
-
-func (p *ModalView) SetModalKind(g1 *gocui.Gui, kind Kind) {
-	g1.Update(
-		func(g *gocui.Gui) error {
-			p.Kind = kind
-			return nil
-		},
-	)
-}
-
-func (p *TableView) SetKind(g1 *gocui.Gui, kind Kind) {
-	g1.Update(
-		func(g *gocui.Gui) error {
-			p.Kind = kind
-			return nil
-		},
-	)
-}
-
-func (p *TableView) ClearFilter(g1 *gocui.Gui) {
-	g1.Update(
-		func(g *gocui.Gui) error {
-			p.Filter = ""
-			return nil
-		},
-	)
-}
-
-func (p *TableView) SetFilter(g1 *gocui.Gui, filter string) {
-	g1.Update(
-		func(g *gocui.Gui) error {
-			p.Filter = filter
-			return nil
-		},
-	)
-}
-
-func (p *ModalView) SetLines(g1 *gocui.Gui, lines []string) {
-	g1.Update(
-		func(g *gocui.Gui) error {
-			p.Lines = lines
-			return nil
-		},
-	)
-}
-
-func (p *ModalView) SetTitle(g1 *gocui.Gui, title string) {
-	g1.Update(
-		func(g *gocui.Gui) error {
-			p.Title = title
-			return nil
-		},
-	)
-}
-
-func (ur *TableView) SelectResource(g1 *gocui.Gui, resource string) {
-	g1.Update(
-		func(g *gocui.Gui) error {
-			switch resource {
-			case KindNamespaces.String():
-				Debugln(g, "SelectResource Namespace")
-				ur.SetKind(g, KindNamespaces)
-			case KindPods.String():
-				Debugln(g, "SelectResource Pod")
-				ur.SetKind(g, KindPods)
-			}
-			return nil
-
 		},
 	)
 }

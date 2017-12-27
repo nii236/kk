@@ -13,7 +13,7 @@ import (
 	"github.com/nii236/k/pkg/k"
 	_ "k8s.io/client-go/plugin/pkg/client/auth"
 
-	appsv1 "k8s.io/api/apps/v1"
+	appsv1 "k8s.io/api/apps/v1beta1"
 	corev1 "k8s.io/api/core/v1"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -68,8 +68,6 @@ func (cs *MockClientSet) seedNamespaces() error {
 }
 
 func (cs *MockClientSet) seedPod(ns, name string) error {
-	// fmt.Println(ns)
-	// fmt.Println(name)
 	_, err := cs.clientSet.CoreV1().Pods(ns).Create(&corev1.Pod{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "Pod",
@@ -91,6 +89,11 @@ func (cs *MockClientSet) seedPod(ns, name string) error {
 	return nil
 }
 
+// GetDeployments returns all deployments from the k8s cluster
+func (cs *MockClientSet) GetDeployments(namespace string) (*appsv1.DeploymentList, error) {
+	return cs.clientSet.AppsV1beta1().Deployments(namespace).List(metav1.ListOptions{})
+}
+
 func (cs *MockClientSet) seedPods() error {
 	namespaces, err := cs.clientSet.CoreV1().Namespaces().List(metav1.ListOptions{})
 	if err != nil {
@@ -108,7 +111,7 @@ func (cs *MockClientSet) seedPods() error {
 
 func (cs *MockClientSet) seedDeployments() error {
 	for i := 0; i < 5; i++ {
-		_, err := cs.clientSet.AppsV1().Deployments("default").Create(&appsv1.Deployment{
+		_, err := cs.clientSet.AppsV1beta1().Deployments("default").Create(&appsv1.Deployment{
 			TypeMeta: metav1.TypeMeta{
 				Kind:       "Namespace",
 				APIVersion: "v1",

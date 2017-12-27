@@ -69,7 +69,23 @@ func (tw *Widget) Layout(g *gocui.Gui) error {
 
 	lines := [][]string{}
 	switch tw.State.UI.Table.Kind {
-	case k.KindPods:
+	case k.KindTableDeployments:
+		for _, deployment := range tw.State.Entities.Deployments.Deployments.Items {
+			lines = append(lines, k.DeploymentLineHelper(deployment))
+		}
+
+		if tw.State.Entities.Deployments.Filter != "" {
+			lines = filter(lines, func(s string) bool {
+				if s == tw.State.Entities.Deployments.Filter {
+					return true
+				}
+				return false
+			})
+		}
+		t.SetHeader(k.DeploymentListHeaders)
+		v.SetCursor(0, tw.State.Entities.Deployments.Cursor)
+		v.SetOrigin(0, tw.State.Entities.Deployments.Cursor-maxY+10)
+	case k.KindTablePods:
 		for _, pod := range tw.State.Entities.Pods.Pods.Items {
 			lines = append(lines, k.PodLineHelper(pod))
 		}
@@ -84,11 +100,14 @@ func (tw *Widget) Layout(g *gocui.Gui) error {
 		t.SetHeader(k.PodListHeaders)
 		v.SetCursor(0, tw.State.Entities.Pods.Cursor)
 		v.SetOrigin(0, tw.State.Entities.Pods.Cursor-maxY+10)
-	case k.KindNamespaces:
+	case k.KindTableNamespaces:
 		for _, ns := range tw.State.Entities.Namespaces.Namespaces.Items {
-			lines = append(lines, []string{ns.Name})
+			lines = append(lines, k.NamespaceLineHelper(ns))
 		}
 		t.SetHeader(k.NamespaceListHeaders)
+		t.SetColumnAlignment([]int{
+			tablewriter.ALIGN_CENTER,
+		})
 		v.SetCursor(0, tw.State.Entities.Namespaces.Cursor)
 		v.SetOrigin(0, tw.State.Entities.Namespaces.Cursor-maxY+10)
 	default:
@@ -98,7 +117,9 @@ func (tw *Widget) Layout(g *gocui.Gui) error {
 	t.SetBorder(false)
 	t.SetColumnSeparator("")
 	t.AppendBulk(lines)
+
 	// t.SetAlignment(tablewriter.ALIGN_CENTER)
+	t.SetColMinWidth(1, maxX-55)
 	t.SetHeaderLine(false)
 	t.Render()
 

@@ -1,20 +1,18 @@
 package k
 
 import (
-	"strconv"
-
 	"github.com/jroimartin/gocui"
 	"k8s.io/api/core/v1"
 )
 
 type PodEntities struct {
 	Cursor         int
-	Loaded         bool
 	Filter         string
 	FilterKind     string
 	Selected       string
-	Pods           *v1.PodList
+	Pods           *v1.PodList `json:"-"`
 	SendingRequest bool
+	Size           int
 }
 
 func PodFilter(vs []v1.Pod, f func(v1.Pod) bool) []v1.Pod {
@@ -35,6 +33,7 @@ func (e *PodEntities) ClearFilter(g1 *gocui.Gui) {
 		},
 	)
 }
+
 func (e *PodEntities) SetFilter(g1 *gocui.Gui, filter string) {
 	g1.Update(
 		func(g *gocui.Gui) error {
@@ -43,6 +42,25 @@ func (e *PodEntities) SetFilter(g1 *gocui.Gui, filter string) {
 		},
 	)
 }
+
+func (e *PodEntities) SetCursor(g1 *gocui.Gui, pos int) {
+	g1.Update(
+		func(g *gocui.Gui) error {
+			e.Cursor = pos
+			return nil
+		},
+	)
+}
+
+func (p *PodEntities) SetSelected(g1 *gocui.Gui, selected string) {
+	g1.Update(
+		func(g *gocui.Gui) error {
+			p.Selected = selected
+			return nil
+		},
+	)
+}
+
 func (e *PodEntities) CursorMove(g1 *gocui.Gui, delta int) {
 	g1.Update(
 		func(g *gocui.Gui) error {
@@ -59,7 +77,6 @@ func (e *PodEntities) CursorMove(g1 *gocui.Gui, delta int) {
 				return nil
 			}
 
-			Debugln(g, "Filtered Pods: "+strconv.Itoa(len(filteredPods)))
 			e.Cursor = e.Cursor + delta
 			switch {
 			case e.Cursor < 1:
@@ -77,9 +94,9 @@ func (e *PodEntities) CursorMove(g1 *gocui.Gui, delta int) {
 func (pr *PodEntities) LoadPodData(g1 *gocui.Gui, pods *v1.PodList) {
 	g1.Update(
 		func(g *gocui.Gui) error {
-			pr.Loaded = true
 			pr.Pods = pods
 			pr.SendingRequest = false
+			pr.Size = len(pods.Items)
 			return nil
 		},
 	)

@@ -8,6 +8,7 @@ import (
 	_ "k8s.io/client-go/plugin/pkg/client/auth"
 	"k8s.io/client-go/tools/clientcmd"
 
+	appsv1 "k8s.io/api/apps/v1beta1"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
@@ -39,6 +40,11 @@ func New(flags *k.ParsedFlags) (*RealClientSet, error) {
 // Get pods (use namespace)
 func (cs *RealClientSet) GetPods(namespace string) (*v1.PodList, error) {
 	return cs.clientset.CoreV1().Pods(namespace).List(metav1.ListOptions{})
+}
+
+// Get pods (use namespace)
+func (cs *RealClientSet) GetDeployments(namespace string) (*appsv1.DeploymentList, error) {
+	return cs.clientset.AppsV1beta1().Deployments(namespace).List(metav1.ListOptions{})
 }
 
 // Get namespaces

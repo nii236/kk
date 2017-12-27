@@ -7,11 +7,12 @@ import (
 )
 
 type EntitiesReducer struct {
-	Pods       *PodEntities
-	Debug      *DebugEntities
-	Errors     *ErrorEntities
-	Namespaces *NamespaceEntities
-	Resources  *ResourceEntities
+	Pods        *PodEntities
+	Debug       *DebugEntities
+	Errors      *ErrorEntities
+	Namespaces  *NamespaceEntities
+	Resources   *ResourceEntities
+	Deployments *DeploymentEntities
 }
 
 type ResourceEntities struct {

@@ -6,19 +6,19 @@ import (
 )
 
 type NamespaceEntities struct {
+	Size           int
 	Cursor         int
-	Loaded         bool
 	Filter         string
 	FilterKind     string
 	Selected       string
-	Namespaces     *v1.NamespaceList
+	Namespaces     *v1.NamespaceList `json:"-"`
 	SendingRequest bool
 }
 
 func (pr *NamespaceEntities) LoadNamespaces(g1 *gocui.Gui, ns *v1.NamespaceList) {
 	g1.Update(
 		func(g *gocui.Gui) error {
-			pr.Loaded = true
+			pr.Size = len(ns.Items)
 			pr.Namespaces = ns
 			pr.SendingRequest = false
 			return nil

@@ -8,21 +8,11 @@ import (
 )
 
 type Widget struct {
-	Size  SizeEnum
 	State *k.State
 }
 
-type SizeEnum int
-
-const (
-	Small SizeEnum = iota + 1
-	Medium
-	Large
-)
-
-func New(name string, size SizeEnum, initialState *k.State) *Widget {
+func New(name string, initialState *k.State) *Widget {
 	return &Widget{
-		Size:  size,
 		State: initialState,
 	}
 }
@@ -33,14 +23,14 @@ func (st *Widget) Layout(g *gocui.Gui) error {
 	w, h := g.Size()
 	modalWidth := 0
 	modalHeight := 0
-	switch st.Size {
-	case Small:
+	switch st.State.UI.Modal.Size {
+	case k.ModalSizeSmall:
 		modalWidth = w * 1 / 8
 		modalHeight = h * 1 / 8
-	case Medium:
+	case k.ModalSizeMedium:
 		modalWidth = w * 1 / 4
 		modalHeight = h * 1 / 4
-	case Large:
+	case k.ModalSizeLarge:
 		modalWidth = w * 1 / 2
 		modalHeight = h * 1 / 2
 	default:
@@ -57,6 +47,14 @@ func (st *Widget) Layout(g *gocui.Gui) error {
 		return err
 	}
 
+	// Extra large modals to be same size as table
+	if st.State.UI.Modal.Size == k.ModalSizeExtraLarge {
+		v, err = g.SetView(k.ScreenModal.String(), 0, 3, w-1, h-4)
+		if err != nil && err != gocui.ErrUnknownView {
+			return err
+		}
+	}
+
 	if st.State.UI.ActiveScreen != k.ScreenModal {
 		g.SetViewOnBottom(k.ScreenModal.String())
 		return nil
@@ -68,6 +66,7 @@ func (st *Widget) Layout(g *gocui.Gui) error {
 	v.Highlight = true
 	v.Title = st.State.UI.Modal.Title
 	v.SetCursor(0, st.State.UI.Modal.Cursor)
+	v.SetOrigin(0, st.State.UI.Modal.Cursor-5)
 	lines := st.State.UI.Modal.Lines
 	v.Write([]byte(strings.Join(lines, "\n")))
 	return nil
