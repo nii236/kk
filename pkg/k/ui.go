@@ -40,11 +40,7 @@ func (ur *UIReducer) CursorMove(g1 *gocui.Gui, delta int) {
 				if len(ur.Modal.Lines) > 0 {
 					ur.Modal.Selected = ur.Modal.Lines[ur.Modal.Cursor]
 				}
-			case ScreenState:
-				ur.State.Cursor = ur.State.Cursor + delta
-				if ur.State.Cursor < 0 {
-					ur.State.Cursor = 0
-				}
+
 			}
 			return nil
 		},

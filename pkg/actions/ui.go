@@ -44,10 +44,11 @@ func ToggleResources(s *k.State) func(g1 *gocui.Gui, _ *gocui.View) error {
 		k.Debugln("Toggle: resources")
 		lines := s.Entities.Resources.Resources
 		s.UI.SetActiveScreen(g, k.ScreenModal)
+		s.UI.Modal.SetCursor(g, 0)
 		s.UI.Modal.SetKind(g, k.KindModalResources)
 		s.UI.Modal.SetLines(g, lines)
 		s.UI.Modal.SetTitle(g, "Resources")
-		s.UI.Modal.SetSize(g, k.ModalSizeSmall)
+		s.UI.Modal.SetSize(g, k.ModalSizeMedium)
 		return nil
 
 	}
@@ -64,10 +65,11 @@ func ToggleNamespaces(s *k.State) func(g1 *gocui.Gui, _ *gocui.View) error {
 			lines = append(lines, ns.ObjectMeta.Name)
 		}
 		s.UI.SetActiveScreen(g, k.ScreenModal)
+		s.UI.Modal.SetCursor(g, 0)
 		s.UI.Modal.SetKind(g, k.KindModalNamespaces)
 		s.UI.Modal.SetLines(g, lines)
 		s.UI.Modal.SetTitle(g, "Namespaces")
-		s.UI.Modal.SetSize(g, k.ModalSizeSmall)
+		s.UI.Modal.SetSize(g, k.ModalSizeMedium)
 		return nil
 	}
 }

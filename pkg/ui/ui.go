@@ -128,8 +128,8 @@ func New(flags *k.ParsedFlags, clientSet *k8s.RealClientSet) (*App, error) {
 	debugView := debug.New(k.ScreenDebug.String(), store)
 
 	// svcList := table.New("Services")
-	titleSpan := span.New("Titlebar", "Kubectl TUI", true, span.Top)
-	legendSpan := span.New("Legend", "^c: Exit ^r: Resource, ^n: Filter ^f: Clear Filter L: Load Data", true, span.Bottom)
+	titleSpan := span.New("Titlebar", "Kubectl TUI", true, span.Top, store)
+	legendSpan := span.New("Legend", "", true, span.Bottom, store)
 
 	app.Gui.SetManager(tableView, debugView, modalView, titleSpan, legendSpan)
 
@@ -147,7 +147,6 @@ func New(flags *k.ParsedFlags, clientSet *k8s.RealClientSet) (*App, error) {
 		Key{"", gocui.KeyArrowDown, actions.Next(store)},
 		Key{"", gocui.KeyPgdn, actions.PageDown(store)},
 		Key{"Modal", gocui.KeyEnter, actions.HandleModalEnter(store, clientSet)},
-		Key{"Table", gocui.KeyCtrlL, actions.FetchContainers(store, clientSet)},
 		Key{"Table", gocui.KeyEnter, actions.HandleTableEnter(store, clientSet)},
 		Key{"Table", gocui.KeyCtrlF, actions.TableClearFilter(store)},
 		Key{"Table", gocui.KeyArrowUp, actions.TableCursorMove(store, -1)},

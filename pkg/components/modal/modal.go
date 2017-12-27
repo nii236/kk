@@ -63,11 +63,26 @@ func (st *Widget) Layout(g *gocui.Gui) error {
 	g.SetCurrentView(k.ScreenModal.String())
 	g.SetViewOnTop(k.ScreenModal.String())
 	v.Clear()
+	_, vy := v.Size()
 	v.Highlight = true
 	v.Title = st.State.UI.Modal.Title
 	v.SetCursor(0, st.State.UI.Modal.Cursor)
-	v.SetOrigin(0, st.State.UI.Modal.Cursor-5)
+
+	// numLines := len(st.State.UI.Modal.Lines)
+	if st.State.UI.Modal.Cursor < vy {
+		v.SetOrigin(0, 0)
+	} else {
+		v.SetOrigin(0, st.State.UI.Modal.Cursor-vy+1)
+	}
+	k.Debugln("vy", vy)
+	k.Debugln("st.State.UI.Modal.Curso", st.State.UI.Modal.Cursor)
+	k.Debugln("height", vy)
+	// v.SetOrigin(0, st.State.UI.Modal.Cursor-5)
 	lines := st.State.UI.Modal.Lines
 	v.Write([]byte(strings.Join(lines, "\n")))
+	ox, oy := v.Origin()
+	k.Debugln("Origin:", ox, oy)
+	cx, cy := v.Cursor()
+	k.Debugln("Cursor:", cx, cy)
 	return nil
 }
