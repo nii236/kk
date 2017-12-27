@@ -5,6 +5,7 @@ import (
 	"k8s.io/api/core/v1"
 )
 
+// PodEntities represents the Pod data
 type PodEntities struct {
 	Cursor         int
 	Filter         string
@@ -15,6 +16,7 @@ type PodEntities struct {
 	Size           int
 }
 
+// PodFilter is a collection function that filters pods based on a predicate
 func PodFilter(vs []v1.Pod, f func(v1.Pod) bool) []v1.Pod {
 	vsf := make([]v1.Pod, 0)
 	for _, v := range vs {
@@ -25,6 +27,7 @@ func PodFilter(vs []v1.Pod, f func(v1.Pod) bool) []v1.Pod {
 	return vsf
 }
 
+// ClearFilter updates the PodEntities state with an empty filter
 func (e *PodEntities) ClearFilter(g1 *gocui.Gui) {
 	g1.Update(
 		func(g *gocui.Gui) error {
@@ -34,6 +37,7 @@ func (e *PodEntities) ClearFilter(g1 *gocui.Gui) {
 	)
 }
 
+// SetFilter updates the PodEntities state with a new filter
 func (e *PodEntities) SetFilter(g1 *gocui.Gui, filter string) {
 	g1.Update(
 		func(g *gocui.Gui) error {
@@ -43,6 +47,7 @@ func (e *PodEntities) SetFilter(g1 *gocui.Gui, filter string) {
 	)
 }
 
+// SetCursor updates the PodEntities state with a new cursor position
 func (e *PodEntities) SetCursor(g1 *gocui.Gui, pos int) {
 	g1.Update(
 		func(g *gocui.Gui) error {
@@ -52,15 +57,17 @@ func (e *PodEntities) SetCursor(g1 *gocui.Gui, pos int) {
 	)
 }
 
-func (p *PodEntities) SetSelected(g1 *gocui.Gui, selected string) {
+// SetSelected updates the PodEntities state with a new selection
+func (e *PodEntities) SetSelected(g1 *gocui.Gui, selected string) {
 	g1.Update(
 		func(g *gocui.Gui) error {
-			p.Selected = selected
+			e.Selected = selected
 			return nil
 		},
 	)
 }
 
+// CursorMove updates the PodEntities state with a new filter
 func (e *PodEntities) CursorMove(g1 *gocui.Gui, delta int) {
 	g1.Update(
 		func(g *gocui.Gui) error {
@@ -91,12 +98,13 @@ func (e *PodEntities) CursorMove(g1 *gocui.Gui, delta int) {
 	)
 }
 
-func (pr *PodEntities) LoadPodData(g1 *gocui.Gui, pods *v1.PodList) {
+// LoadPodData updates the PodEntities state with a new filter
+func (e *PodEntities) LoadPodData(g1 *gocui.Gui, pods *v1.PodList) {
 	g1.Update(
 		func(g *gocui.Gui) error {
-			pr.Pods = pods
-			pr.SendingRequest = false
-			pr.Size = len(pods.Items)
+			e.Pods = pods
+			e.SendingRequest = false
+			e.Size = len(pods.Items)
 			return nil
 		},
 	)

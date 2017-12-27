@@ -6,6 +6,7 @@ import (
 	"github.com/olekukonko/tablewriter"
 )
 
+// Widget is the table widget
 type Widget struct {
 	Name     string
 	Values   [][]string
@@ -13,33 +14,12 @@ type Widget struct {
 	State    *k.State
 }
 
+// New returns a new table widget
 func New(name string, initialState *k.State) *Widget {
 	return &Widget{
 		Name:  name,
 		State: initialState,
 	}
-}
-
-func (tw *Widget) Delta(delta int) {
-	tw.Selected = tw.Selected + delta
-
-	if tw.Selected < 0 {
-		tw.Selected = 0
-	}
-	maxLength := len(tw.Values)
-	if tw.Selected > maxLength {
-		tw.Selected = maxLength
-	}
-
-}
-
-func (tw *Widget) Val() [][]string {
-	return [][]string{}
-}
-
-func (tw *Widget) SetVal(values [][]string) error {
-	tw.Values = values
-	return nil
 }
 
 // Layout for the tablewidget

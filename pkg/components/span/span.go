@@ -7,7 +7,8 @@ import (
 	"github.com/nii236/k/pkg/k"
 )
 
-type SpanText struct {
+// Widget is a Span widget
+type Widget struct {
 	Name     string
 	Text     string
 	Centered bool
@@ -15,15 +16,19 @@ type SpanText struct {
 	State    *k.State
 }
 
+// Position determines where the Span widget goes
 type Position int
 
 const (
+	// Top position will be on the top of the screen
 	Top Position = iota + 1
+	// Bottom position will be on the bottom of the screen
 	Bottom
 )
 
-func New(name, text string, centered bool, position Position, store *k.State) *SpanText {
-	return &SpanText{
+// New returns a new Span widget
+func New(name, text string, centered bool, position Position, store *k.State) *Widget {
+	return &Widget{
 		Name:     name,
 		Text:     text,
 		Centered: centered,
@@ -32,16 +37,18 @@ func New(name, text string, centered bool, position Position, store *k.State) *S
 	}
 }
 
-func (st *SpanText) SetVal(val string) {
+// SetVal updates the widget state with a new text
+func (st *Widget) SetVal(val string) {
 	st.Text = val
 }
 
-func (st *SpanText) Val() string {
+// Val returns the widget state with its text
+func (st *Widget) Val() string {
 	return st.Text
 }
 
 // Layout for the tablewidget
-func (st *SpanText) Layout(g *gocui.Gui) error {
+func (st *Widget) Layout(g *gocui.Gui) error {
 	maxX, maxY := g.Size()
 	heightOffset := 0
 	if st.Pos == Bottom {
@@ -86,8 +93,6 @@ func (st *SpanText) Layout(g *gocui.Gui) error {
 
 	return nil
 }
-
-var Legend = map[string][]string{}
 
 func getDebugLegend() string {
 	result := "Esc: Back"

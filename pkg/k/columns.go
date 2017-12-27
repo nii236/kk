@@ -10,10 +10,16 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
+// PodListHeaders are the headers needed for the Pod list
 var PodListHeaders = []string{"Namespace", "Name", "Restarts", "Age", "Ready", "Status"}
+
+// NamespaceListHeaders are the headers needed for the Namespace list
 var NamespaceListHeaders = []string{"Status", "Name", "Age"}
+
+// DeploymentListHeaders are the headers needed for the Deployment list
 var DeploymentListHeaders = []string{"Namespace", "Name", "Pods", "Age"}
 
+// DeploymentLineHelper is the column helper for Deployments
 func DeploymentLineHelper(deployment appsv1.Deployment) []string {
 	pods := fmt.Sprintf("%d/%d", deployment.Status.ReadyReplicas, deployment.Status.Replicas)
 	return []string{
@@ -24,6 +30,7 @@ func DeploymentLineHelper(deployment appsv1.Deployment) []string {
 	}
 }
 
+// NamespaceLineHelper is the column helper for Namespaces
 func NamespaceLineHelper(ns corev1.Namespace) []string {
 	status := fmt.Sprintf("%s", ns.Status.Phase)
 	return []string{
@@ -33,6 +40,7 @@ func NamespaceLineHelper(ns corev1.Namespace) []string {
 	}
 }
 
+// PodLineHelper is the column helper for Pods
 func PodLineHelper(pod corev1.Pod) []string {
 	return []string{
 		pod.Namespace,
@@ -44,7 +52,6 @@ func PodLineHelper(pod corev1.Pod) []string {
 	}
 }
 
-// Column helper: Restarts
 func columnHelperRestarts(pod corev1.Pod) string {
 	cs := pod.Status.ContainerStatuses
 	r := 0
@@ -54,7 +61,6 @@ func columnHelperRestarts(pod corev1.Pod) string {
 	return strconv.Itoa(r)
 }
 
-// Column helper: Age
 func columnHelperAge(meta metav1.ObjectMeta) string {
 	t := meta.CreationTimestamp
 	d := time.Now().Sub(t.Time)
@@ -75,13 +81,11 @@ func columnHelperAge(meta metav1.ObjectMeta) string {
 	return "?"
 }
 
-// Column helper: Status
 func columnHelperStatus(pod corev1.Pod) string {
 	s := pod.Status
 	return fmt.Sprintf("%s", s.Phase)
 }
 
-// Column helper: Ready
 func columnHelperReady(pod corev1.Pod) string {
 	cs := pod.Status.ContainerStatuses
 	cr := 0

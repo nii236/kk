@@ -7,22 +7,31 @@ import (
 	"github.com/urfave/cli"
 )
 
+// ModalKind is the type of Modal
 type ModalKind string
-type TableKind string
 
 func (k ModalKind) String() string {
 	return string(k)
 }
+
+// TableKind is the type of Table
+type TableKind string
+
 func (k TableKind) String() string {
 	return string(k)
 }
 
+// Screen represents a main window
 type Screen string
 
 const (
+	// ScreenTable is the Table screen
 	ScreenTable Screen = "Table"
+	// ScreenModal is the Modal screen
 	ScreenModal Screen = "Modal"
+	// ScreenState is the State screen
 	ScreenState Screen = "State"
+	// ScreenDebug is the Debug screen
 	ScreenDebug Screen = "Debug"
 )
 
@@ -30,6 +39,7 @@ func (s Screen) String() string {
 	return string(s)
 }
 
+// State is the top level reducer
 type State struct {
 	UI       *UIReducer
 	Entities *EntitiesReducer
@@ -62,6 +72,7 @@ func (flags *ParsedFlags) Parse(c *cli.Context) error {
 	return nil
 }
 
+// JSONString returns a string representation of the top level reducer for debugging purposes
 func (s *State) JSONString() (string, error) {
 	b, err := json.MarshalIndent(s, "", "    ")
 	if err != nil {

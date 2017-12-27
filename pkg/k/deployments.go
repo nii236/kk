@@ -7,6 +7,7 @@ import (
 	appsv1 "k8s.io/api/apps/v1beta1"
 )
 
+// DeploymentEntities contains the data for deployments from the API
 type DeploymentEntities struct {
 	Cursor         int
 	Filter         string
@@ -17,6 +18,7 @@ type DeploymentEntities struct {
 	Size           int
 }
 
+// DeploymentFilter is a collection function that filters deployments based on a predicate
 func DeploymentFilter(vs []appsv1.Deployment, f func(appsv1.Deployment) bool) []appsv1.Deployment {
 	vsf := make([]appsv1.Deployment, 0)
 	for _, v := range vs {
@@ -27,6 +29,7 @@ func DeploymentFilter(vs []appsv1.Deployment, f func(appsv1.Deployment) bool) []
 	return vsf
 }
 
+// ClearFilter updates the DeploymentEntities state with an empty filter
 func (e *DeploymentEntities) ClearFilter(g1 *gocui.Gui) {
 	g1.Update(
 		func(g *gocui.Gui) error {
@@ -36,6 +39,7 @@ func (e *DeploymentEntities) ClearFilter(g1 *gocui.Gui) {
 	)
 }
 
+// SetFilter updates the DeploymentEntities state with a new filter
 func (e *DeploymentEntities) SetFilter(g1 *gocui.Gui, filter string) {
 	g1.Update(
 		func(g *gocui.Gui) error {
@@ -45,6 +49,7 @@ func (e *DeploymentEntities) SetFilter(g1 *gocui.Gui, filter string) {
 	)
 }
 
+// SetCursor updates the DeploymentEntities state with a new cursor position (absolute)
 func (e *DeploymentEntities) SetCursor(g1 *gocui.Gui, pos int) {
 	g1.Update(
 		func(g *gocui.Gui) error {
@@ -54,15 +59,17 @@ func (e *DeploymentEntities) SetCursor(g1 *gocui.Gui, pos int) {
 	)
 }
 
-func (p *DeploymentEntities) SetSelected(g1 *gocui.Gui, selected string) {
+// SetSelected updates the DeploymentEntities state with a new selection
+func (e *DeploymentEntities) SetSelected(g1 *gocui.Gui, selected string) {
 	g1.Update(
 		func(g *gocui.Gui) error {
-			p.Selected = selected
+			e.Selected = selected
 			return nil
 		},
 	)
 }
 
+// CursorMove updates the DeploymentEntities state with a new cursor position (delta)
 func (e *DeploymentEntities) CursorMove(g1 *gocui.Gui, delta int) {
 	g1.Update(
 		func(g *gocui.Gui) error {
@@ -94,6 +101,7 @@ func (e *DeploymentEntities) CursorMove(g1 *gocui.Gui, delta int) {
 	)
 }
 
+// LoadDeploymentData updates the DeploymentEntities state with new data
 func (pr *DeploymentEntities) LoadDeploymentData(g1 *gocui.Gui, deployments *appsv1.DeploymentList) {
 	g1.Update(
 		func(g *gocui.Gui) error {

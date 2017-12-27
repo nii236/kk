@@ -91,12 +91,3 @@ func Next(s *k.State) func(g1 *gocui.Gui, _ *gocui.View) error {
 		return nil
 	}
 }
-
-// AcknowledgeErrors returns a function that will toggle the debug view}
-func AcknowledgeErrors(s *k.State) func(g1 *gocui.Gui, _ *gocui.View) error {
-	return func(g *gocui.Gui, _ *gocui.View) error {
-		s.Entities.Errors.Acknowledge(g)
-		s.UI.SetActiveScreen(g, k.ScreenTable)
-		return nil
-	}
-}

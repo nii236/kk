@@ -7,17 +7,19 @@ import (
 	"github.com/nii236/k/pkg/k"
 )
 
+// Widget represents a modal widget
 type Widget struct {
 	State *k.State
 }
 
+// New returns a new modal widget
 func New(name string, initialState *k.State) *Widget {
 	return &Widget{
 		State: initialState,
 	}
 }
 
-// Layout for the tablewidget
+// Layout for the modal widget
 func (st *Widget) Layout(g *gocui.Gui) error {
 
 	w, h := g.Size()
