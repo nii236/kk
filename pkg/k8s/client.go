@@ -5,7 +5,6 @@ import (
 
 	"github.com/nii236/k/pkg/k"
 	"k8s.io/client-go/kubernetes"
-	_ "k8s.io/client-go/plugin/pkg/client/auth"
 	"k8s.io/client-go/tools/clientcmd"
 
 	appsv1 "k8s.io/api/apps/v1beta1"

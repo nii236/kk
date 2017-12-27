@@ -10,7 +10,6 @@ import (
 	"k8s.io/client-go/kubernetes/fake"
 
 	"github.com/nii236/k/pkg/k"
-	_ "k8s.io/client-go/plugin/pkg/client/auth"
 
 	appsv1 "k8s.io/api/apps/v1beta1"
 	corev1 "k8s.io/api/core/v1"
@@ -24,7 +23,7 @@ type MockClientSet struct {
 	clientSet *fake.Clientset
 }
 
-// New returns a new clientset
+// NewMock returns a new clientset
 func NewMock(flags *k.ParsedFlags) (*MockClientSet, error) {
 	mockClientSet := fake.NewSimpleClientset()
 	mocker, err := faker.New("en")

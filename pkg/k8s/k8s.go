@@ -3,8 +3,6 @@ package k8s
 import (
 	"io"
 
-	_ "k8s.io/client-go/plugin/pkg/client/auth"
-
 	appsv1 "k8s.io/api/apps/v1beta1"
 	corev1 "k8s.io/api/core/v1"
 )
