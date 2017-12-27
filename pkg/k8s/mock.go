@@ -80,6 +80,14 @@ func (cs *MockClientSet) seedPod(ns, name string) error {
 				Time: time.Now().Add(-48 * time.Hour),
 			},
 		},
+		Spec: corev1.PodSpec{
+			Containers: []corev1.Container{
+				{
+					Name:  cs.faker.Name(),
+					Image: cs.faker.Name(),
+				},
+			},
+		},
 	})
 	if err != nil {
 		return err

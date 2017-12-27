@@ -100,7 +100,7 @@ var store = &k.State{
 }
 
 // New returns a new instance of the TUI
-func New(flags *k.ParsedFlags, clientSet *k8s.RealClientSet) (*App, error) {
+func New(flags *k.ParsedFlags, clientSet k8s.ClientSet) (*App, error) {
 	g, err := gocui.NewGui(gocui.Output256)
 	if err != nil {
 		return nil, err

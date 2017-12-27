@@ -41,6 +41,7 @@ func (e *PodEntities) ClearFilter(g1 *gocui.Gui) {
 func (e *PodEntities) SetFilter(g1 *gocui.Gui, filter string) {
 	g1.Update(
 		func(g *gocui.Gui) error {
+			Debugln("HI")
 			e.Filter = filter
 			return nil
 		},

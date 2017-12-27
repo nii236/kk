@@ -21,13 +21,25 @@ func run(c *cli.Context) error {
 	logger.New(flags.PROD, flags.DEBUG)
 	clientSet, err := k8s.New(flags)
 	if err != nil {
-		fmt.Println(err)
+		panic(err)
+	}
+	if flags.TEST {
+		mockClientSet, err := k8s.NewMock(flags)
+		if err != nil {
+			panic(err)
+		}
+		app, err := ui.New(flags, mockClientSet)
+		if err != nil {
+			fmt.Println(err)
+		}
+		return app.Run()
 	}
 	app, err := ui.New(flags, clientSet)
 	if err != nil {
 		fmt.Println(err)
 	}
 	return app.Run()
+
 }
 
 func main() {

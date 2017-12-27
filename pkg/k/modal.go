@@ -83,8 +83,8 @@ func (p *ModalView) SetCursor(g1 *gocui.Gui, pos int) {
 	g1.Update(
 		func(g *gocui.Gui) error {
 			p.Cursor = pos
-			if len(p.Lines) > 0 {
-				p.Selected = p.Lines[p.Cursor]
+			if len(p.Lines) > 0 && p.Cursor > 0 {
+				p.Selected = p.Lines[p.Cursor-1]
 			}
 			p.Selected = ""
 			return nil
