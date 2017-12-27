@@ -10,6 +10,7 @@ import (
 // ModalKind is the type of Modal
 type ModalKind string
 
+// String returns the string representation of the ModalKind
 func (k ModalKind) String() string {
 	return string(k)
 }
@@ -17,6 +18,7 @@ func (k ModalKind) String() string {
 // TableKind is the type of Table
 type TableKind string
 
+// String returns the string representation of the TableKind
 func (k TableKind) String() string {
 	return string(k)
 }
