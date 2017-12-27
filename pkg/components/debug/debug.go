@@ -1,9 +1,6 @@
 package debug
 
 import (
-	"fmt"
-	"strings"
-
 	"github.com/jroimartin/gocui"
 	"github.com/nii236/k/pkg/k"
 )
@@ -39,11 +36,5 @@ func (st *Widget) Layout(g *gocui.Gui) error {
 	g.SetCurrentView(k.ScreenDebug.String())
 	v.Title = "Debug"
 	v.Autoscroll = true
-	lines := []string{}
-	for _, el := range st.State.Entities.Debug.Lines {
-		lines = append(lines, el.(string))
-	}
-
-	fmt.Fprintf(v, strings.Join(lines, "\n"))
 	return nil
 }

@@ -49,28 +49,16 @@ var store = &k.State{
 	UI: &k.UIReducer{
 		ActiveScreen: "Table",
 		Table: &k.TableView{
-			Kind:     "Pods",
-			Selected: "",
-			Filter:   "",
+			Kind: "Pods",
 		},
 		Modal: &k.ModalView{
-			Cursor:   0,
-			Kind:     k.KindModalNamespaces,
-			Lines:    []string{},
-			Selected: "",
-			Size:     k.ModalSizeLarge,
-		},
-		State: &k.StateView{
 			Cursor: 0,
-		},
-		Debug: &k.DebugView{
-			Cursor: 0,
+			Kind:   k.KindModalNamespaces,
+			Lines:  []string{},
+			Size:   k.ModalSizeLarge,
 		},
 	},
 	Entities: &k.EntitiesReducer{
-		Debug: &k.DebugEntities{
-			Lines: []interface{}{},
-		},
 		Deployments: &k.DeploymentEntities{
 			Cursor:         0,
 			Size:           0,
@@ -82,10 +70,6 @@ var store = &k.State{
 			Size:           0,
 			SendingRequest: false,
 			Pods:           &v1.PodList{},
-		},
-		Errors: &k.ErrorEntities{
-			Lines:        []string{},
-			Acknowledged: true,
 		},
 		Namespaces: &k.NamespaceEntities{
 			Cursor:         1,
@@ -114,7 +98,7 @@ func New(flags *k.ParsedFlags, clientSet k8s.ClientSet) (*App, error) {
 		Gui:       g,
 	}
 	app.ClientSet = clientSet
-	if flags.TEST {
+	if flags.Test {
 		app.ClientSet, err = k8s.NewMock(flags)
 		if err != nil {
 			panic(errors.Wrap(err, "Could not create mock client"))
@@ -144,10 +128,10 @@ func New(flags *k.ParsedFlags, clientSet k8s.ClientSet) (*App, error) {
 		Key{"Table", 'd', actions.HandleTableDelete(store, clientSet)},
 		Key{"", 'D', actions.StateDump(store)},
 		Key{"", 'L', actions.LoadManual(app.ClientSet, store)},
-		Key{"", gocui.KeyArrowUp, actions.Prev(store)},
-		Key{"", gocui.KeyPgup, actions.PageUp(store)},
-		Key{"", gocui.KeyArrowDown, actions.Next(store)},
-		Key{"", gocui.KeyPgdn, actions.PageDown(store)},
+		Key{"Modal", gocui.KeyArrowUp, actions.ModalCursorMove(store, -1)},
+		Key{"Modal", gocui.KeyPgup, actions.ModalCursorMove(store, -5)},
+		Key{"Modal", gocui.KeyArrowDown, actions.ModalCursorMove(store, 1)},
+		Key{"Modal", gocui.KeyPgdn, actions.ModalCursorMove(store, 5)},
 		Key{"Modal", gocui.KeyEnter, actions.HandleModalEnter(store, clientSet)},
 		Key{"Table", gocui.KeyEnter, actions.HandleTableEnter(store, clientSet)},
 		Key{"Table", gocui.KeyCtrlF, actions.TableClearFilter(store)},

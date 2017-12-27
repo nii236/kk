@@ -91,7 +91,7 @@ func (tw *Widget) Layout(g *gocui.Gui) error {
 		v.SetCursor(0, tw.State.Entities.Namespaces.Cursor)
 		v.SetOrigin(0, tw.State.Entities.Namespaces.Cursor-maxY+10)
 	default:
-		panic("Unsupported table kind: " + tw.State.UI.Table.Kind)
+		k.Errorln("Unsupported table kind: " + tw.State.UI.Table.Kind)
 	}
 
 	t.SetBorder(false)
@@ -107,7 +107,6 @@ func (tw *Widget) Layout(g *gocui.Gui) error {
 }
 
 func filter(vs [][]string, f func(string) bool) [][]string {
-
 	vsf := make([][]string, 0)
 	for _, v := range vs {
 		if f(v[0]) {

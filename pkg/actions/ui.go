@@ -28,7 +28,6 @@ func ToggleResources(s *k.State) func(g1 *gocui.Gui, _ *gocui.View) error {
 		k.Debugln("Toggle: resources")
 		lines := s.Entities.Resources.Resources
 		s.UI.SetActiveScreen(g, k.ScreenModal)
-		s.UI.Modal.SetCursor(g, 0)
 		s.UI.Modal.SetKind(g, k.KindModalResources)
 		s.UI.Modal.SetLines(g, lines)
 		s.UI.Modal.SetTitle(g, "Resources")
@@ -51,43 +50,10 @@ func ToggleNamespaces(s *k.State) func(g1 *gocui.Gui, _ *gocui.View) error {
 			lines = append(lines, ns.ObjectMeta.Name)
 		}
 		s.UI.SetActiveScreen(g, k.ScreenModal)
-		s.UI.Modal.SetCursor(g, 0)
 		s.UI.Modal.SetKind(g, k.KindModalNamespaces)
 		s.UI.Modal.SetLines(g, lines)
 		s.UI.Modal.SetTitle(g, "Namespaces")
 		s.UI.Modal.SetSize(g, k.ModalSizeMedium)
-		return nil
-	}
-}
-
-// PageUp returns a function that will toggle the debug view
-func PageUp(s *k.State) func(g1 *gocui.Gui, _ *gocui.View) error {
-	return func(g *gocui.Gui, _ *gocui.View) error {
-		s.UI.CursorMove(g, -10)
-		return nil
-	}
-}
-
-// Prev returns a function that will toggle the debug view
-func Prev(s *k.State) func(g1 *gocui.Gui, _ *gocui.View) error {
-	return func(g *gocui.Gui, _ *gocui.View) error {
-		s.UI.CursorMove(g, -1)
-		return nil
-	}
-}
-
-// PageDown returns a function that will toggle the debug view
-func PageDown(s *k.State) func(g1 *gocui.Gui, _ *gocui.View) error {
-	return func(g *gocui.Gui, _ *gocui.View) error {
-		s.UI.CursorMove(g, 10)
-		return nil
-	}
-}
-
-// Next returns a function that will toggle the debug view
-func Next(s *k.State) func(g1 *gocui.Gui, _ *gocui.View) error {
-	return func(g *gocui.Gui, _ *gocui.View) error {
-		s.UI.CursorMove(g, 1)
 		return nil
 	}
 }

@@ -2,14 +2,18 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
 	"os"
 
 	"github.com/nii236/k/pkg/k"
 	"github.com/nii236/k/pkg/k8s"
 	"github.com/nii236/k/pkg/logger"
 	"github.com/nii236/k/pkg/ui"
+	"github.com/pkg/errors"
 	"github.com/urfave/cli"
 )
+
+var log *logger.Log
 
 func run(c *cli.Context) error {
 	flags := &k.ParsedFlags{}
@@ -18,26 +22,31 @@ func run(c *cli.Context) error {
 		return err
 	}
 
-	logger.New(flags.PROD, flags.DEBUG)
-	clientSet, err := k8s.New(flags)
-	if err != nil {
-		panic(err)
-	}
-	if flags.TEST {
+	logger.New(flags.LogToFile, flags.Debug)
+	log = logger.Get()
+
+	if flags.Test {
 		mockClientSet, err := k8s.NewMock(flags)
 		if err != nil {
-			panic(err)
+			log.Fatalln(errors.Wrap(err, "main.go: Could not initialise k8s client"))
 		}
 		app, err := ui.New(flags, mockClientSet)
 		if err != nil {
-			fmt.Println(err)
+			log.Fatalln(errors.Wrap(err, "main.go: Could not initialise k8s client"))
 		}
+		log.Out = ioutil.Discard
 		return app.Run()
+	}
+
+	clientSet, err := k8s.New(flags)
+	if err != nil {
+		log.Fatalln(errors.Wrap(err, "main.go: Could not initialise k8s client"))
 	}
 	app, err := ui.New(flags, clientSet)
 	if err != nil {
 		fmt.Println(err)
 	}
+	log.Out = ioutil.Discard
 	return app.Run()
 
 }
@@ -58,7 +67,7 @@ func main() {
 			Value:  fmt.Sprintf("%s/.kube/admin.conf", os.Getenv("HOME")),
 		},
 		cli.IntFlag{
-			Name:   "refresh-interval, f",
+			Name:   "refresh-interval",
 			Usage:  "Seconds between updates",
 			EnvVar: "REFRESH_INTERVAL",
 			Value:  1,
@@ -78,11 +87,16 @@ func main() {
 			Usage:  "Debug logging",
 			EnvVar: "DEBUG",
 		},
+		cli.BoolFlag{
+			Name:   "log-to-file, f",
+			Usage:  "Log to file",
+			EnvVar: "LOG_TO_FILE",
+		},
 		cli.StringFlag{
-			Name:   "debug-file",
-			Usage:  "Debug logging",
+			Name:   "log-file-path",
+			Usage:  "File to log to",
 			Value:  "/tmp/debug.log",
-			EnvVar: "DEBUG_FILE",
+			EnvVar: "LOG_FILE_PATH",
 		},
 		cli.BoolFlag{
 			Name:   "test, t",

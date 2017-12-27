@@ -1,7 +1,6 @@
 package logger
 
 import (
-	"io/ioutil"
 	"os"
 
 	"github.com/sirupsen/logrus"
@@ -15,25 +14,24 @@ type Log struct {
 var log *Log
 
 // New initializes the singleton logger
-func New(prod, debug bool) {
+func New(DebugToFile, Debug bool) {
 	log = &Log{
 		logrus.New(),
 	}
 
-	log.Out = ioutil.Discard
 	log.Formatter = &logrus.TextFormatter{ForceColors: true}
 
-	if debug {
-		log.Level = logrus.DebugLevel
+	if DebugToFile {
 		h, err := NewLogrusFileHook("/tmp/debug.log", os.O_APPEND|os.O_WRONLY, 0666)
 		if err != nil {
 			panic(err)
 		}
 		log.AddHook(h)
-		log.Infoln("Running in DEBUG mode")
 	}
-	if prod {
-		log.Infoln("Running in PRODUCTION mode")
+
+	if Debug {
+		log.Infoln("Running in DEBUG mode")
+		log.SetLevel(logrus.DebugLevel)
 	}
 }
 

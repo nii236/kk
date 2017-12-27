@@ -39,64 +39,76 @@ const (
 )
 
 //SetSize updates the modal UI state's size
-func (p *ModalView) SetSize(g1 *gocui.Gui, size ModalSize) {
+func (mv *ModalView) SetSize(g1 *gocui.Gui, size ModalSize) {
+	Debugln("ModalView: SetSize")
 	g1.Update(
 		func(g *gocui.Gui) error {
-			p.Size = size
+			mv.Size = size
 			return nil
 		},
 	)
 }
 
 //SetKind updates the modal UI state's kind
-func (p *ModalView) SetKind(g1 *gocui.Gui, kind ModalKind) {
+func (mv *ModalView) SetKind(g1 *gocui.Gui, kind ModalKind) {
+	Debugln("ModalView: SetKind")
 	g1.Update(
 		func(g *gocui.Gui) error {
-			p.Kind = kind
+			mv.Kind = kind
 			return nil
 		},
 	)
 }
 
 //SetLines updates the modal UI state's lines
-func (p *ModalView) SetLines(g1 *gocui.Gui, lines []string) {
+func (mv *ModalView) SetLines(g1 *gocui.Gui, lines []string) {
+	Debugln("ModalView: SetLines")
 	g1.Update(
 		func(g *gocui.Gui) error {
-			p.Lines = lines
+			mv.Lines = lines
 			return nil
 		},
 	)
 }
 
 //SetTitle updates the modal UI state's title
-func (p *ModalView) SetTitle(g1 *gocui.Gui, title string) {
+func (mv *ModalView) SetTitle(g1 *gocui.Gui, title string) {
+	Debugln("ModalView: SetTitle")
 	g1.Update(
 		func(g *gocui.Gui) error {
-			p.Title = title
+			mv.Title = title
 			return nil
 		},
 	)
 }
 
 //SetCursor updates the modal UI state's cursor position
-func (p *ModalView) SetCursor(g1 *gocui.Gui, pos int) {
+func (mv *ModalView) SetCursor(g1 *gocui.Gui, pos int) {
+	Debugln("ModalView: SetCursor")
 	g1.Update(
 		func(g *gocui.Gui) error {
-			p.Cursor = pos
-			if len(p.Lines) > 0 && p.Cursor > 0 {
-				p.Selected = p.Lines[p.Cursor-1]
+			mv.Cursor = pos
+			if len(mv.Lines) > 0 && mv.Cursor > 0 {
+				mv.Selected = mv.Lines[mv.Cursor-1]
 			}
-			p.Selected = ""
+			mv.Selected = ""
 			return nil
 		},
 	)
 }
 
-//SetSelected updates the modal UI state's selection
-func (p *ModalView) SetSelected(g1 *gocui.Gui, selected string) {
+// CursorMove updates the UI state with a new cursor position (delta)
+func (mv *ModalView) CursorMove(g1 *gocui.Gui, delta int) {
+	Debugln("ModalView: CursorMove")
 	g1.Update(
 		func(g *gocui.Gui) error {
-			p.Selected = selected
+			mv.Cursor = mv.Cursor + delta
+			switch {
+			case mv.Cursor < 0:
+				mv.Cursor = 0
+			case mv.Cursor > len(mv.Lines)-1:
+				mv.Cursor = len(mv.Lines) - 1
+			}
 			return nil
 		},
 	)

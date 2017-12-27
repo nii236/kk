@@ -3,6 +3,7 @@ package k
 import (
 	"fmt"
 	"strconv"
+	"strings"
 	"time"
 
 	appsv1 "k8s.io/api/apps/v1beta1"
@@ -38,6 +39,20 @@ func NamespaceLineHelper(ns corev1.Namespace) []string {
 		ns.Name,
 		columnHelperAge(ns.ObjectMeta),
 	}
+}
+
+// PodNameFromLine returns a pods name from a line in a table
+func PodNameFromLine(line string) string {
+	if line == "" {
+		return ""
+	}
+
+	i := strings.Index(line, " ")
+	if i == -1 {
+		return line
+	}
+
+	return line[0:i]
 }
 
 // PodLineHelper is the column helper for Pods

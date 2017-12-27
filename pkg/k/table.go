@@ -1,12 +1,14 @@
 package k
 
-import "github.com/jroimartin/gocui"
+import (
+	"github.com/pkg/errors"
+
+	"github.com/jroimartin/gocui"
+)
 
 // TableView is the state for the table component
 type TableView struct {
-	Selected string
-	Filter   string
-	Kind     TableKind
+	Kind TableKind
 }
 
 const (
@@ -20,6 +22,7 @@ const (
 
 // SelectResource updates the table view state with a new selected resource to display
 func (v *TableView) SelectResource(g1 *gocui.Gui, resource string) {
+	Debugln("UI TableView: SelectResource")
 	g1.Update(
 		func(g *gocui.Gui) error {
 			switch resource {
@@ -33,7 +36,7 @@ func (v *TableView) SelectResource(g1 *gocui.Gui, resource string) {
 				Debugln("SelectResource Deployments")
 				v.SetKind(g, KindTableDeployments)
 			default:
-				Errorln("Unsupported resource: " + resource)
+				Errorln(errors.New("Unsupported resource: " + resource))
 			}
 			return nil
 
@@ -43,29 +46,10 @@ func (v *TableView) SelectResource(g1 *gocui.Gui, resource string) {
 
 // SetKind updates the table view state with a new table kind
 func (v *TableView) SetKind(g1 *gocui.Gui, kind TableKind) {
+	Debugln("UI TableView: SetKind")
 	g1.Update(
 		func(g *gocui.Gui) error {
 			v.Kind = kind
-			return nil
-		},
-	)
-}
-
-// ClearFilter updates the table view state with an empty filter
-func (v *TableView) ClearFilter(g1 *gocui.Gui) {
-	g1.Update(
-		func(g *gocui.Gui) error {
-			v.Filter = ""
-			return nil
-		},
-	)
-}
-
-// SetFilter updates the table view state with a new filter
-func (v *TableView) SetFilter(g1 *gocui.Gui, filter string) {
-	g1.Update(
-		func(g *gocui.Gui) error {
-			v.Filter = filter
 			return nil
 		},
 	)

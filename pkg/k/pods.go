@@ -10,7 +10,6 @@ type PodEntities struct {
 	Cursor         int
 	Filter         string
 	FilterKind     string
-	Selected       string
 	Pods           *v1.PodList `json:"-"`
 	SendingRequest bool
 	Size           int
@@ -29,6 +28,7 @@ func PodFilter(vs []v1.Pod, f func(v1.Pod) bool) []v1.Pod {
 
 // ClearFilter updates the PodEntities state with an empty filter
 func (e *PodEntities) ClearFilter(g1 *gocui.Gui) {
+	Debugln("Pods: ClearFilter")
 	g1.Update(
 		func(g *gocui.Gui) error {
 			e.Filter = ""
@@ -39,9 +39,9 @@ func (e *PodEntities) ClearFilter(g1 *gocui.Gui) {
 
 // SetFilter updates the PodEntities state with a new filter
 func (e *PodEntities) SetFilter(g1 *gocui.Gui, filter string) {
+	Debugln("Pods: SetFilter")
 	g1.Update(
 		func(g *gocui.Gui) error {
-			Debugln("HI")
 			e.Filter = filter
 			return nil
 		},
@@ -50,6 +50,7 @@ func (e *PodEntities) SetFilter(g1 *gocui.Gui, filter string) {
 
 // SetCursor updates the PodEntities state with a new cursor position
 func (e *PodEntities) SetCursor(g1 *gocui.Gui, pos int) {
+	Debugln("Pods: SetCursor")
 	g1.Update(
 		func(g *gocui.Gui) error {
 			e.Cursor = pos
@@ -58,18 +59,9 @@ func (e *PodEntities) SetCursor(g1 *gocui.Gui, pos int) {
 	)
 }
 
-// SetSelected updates the PodEntities state with a new selection
-func (e *PodEntities) SetSelected(g1 *gocui.Gui, selected string) {
-	g1.Update(
-		func(g *gocui.Gui) error {
-			e.Selected = selected
-			return nil
-		},
-	)
-}
-
 // CursorMove updates the PodEntities state with a new filter
 func (e *PodEntities) CursorMove(g1 *gocui.Gui, delta int) {
+	Debugln("Pods: CursorMove")
 	g1.Update(
 		func(g *gocui.Gui) error {
 			filteredPods := PodFilter(e.Pods.Items, func(pod v1.Pod) bool {
@@ -93,7 +85,6 @@ func (e *PodEntities) CursorMove(g1 *gocui.Gui, delta int) {
 				e.Cursor = len(filteredPods)
 			}
 
-			e.Selected = filteredPods[e.Cursor-1].Name
 			return nil
 		},
 	)
@@ -101,6 +92,7 @@ func (e *PodEntities) CursorMove(g1 *gocui.Gui, delta int) {
 
 // LoadPodData updates the PodEntities state with a new filter
 func (e *PodEntities) LoadPodData(g1 *gocui.Gui, pods *v1.PodList) {
+	Debugln("Pods: LoadPodData")
 	g1.Update(
 		func(g *gocui.Gui) error {
 			e.Pods = pods

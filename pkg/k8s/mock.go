@@ -1,6 +1,7 @@
 package k8s
 
 import (
+	"fmt"
 	"io"
 	"strings"
 	"time"
@@ -166,14 +167,11 @@ func (cs *MockClientSet) GetNamespaces() (*corev1.NamespaceList, error) {
 
 // Get the pod containers
 func (cs *MockClientSet) GetPodContainers(podName string, namespace string) []string {
-	var pc []string
-
-	pod, _ := cs.clientSet.CoreV1().Pods(namespace).Get(podName, metav1.GetOptions{})
-	for _, c := range pod.Spec.Containers {
-		pc = append(pc, c.Name)
+	result := []string{}
+	for i := 0; i < 3; i++ {
+		result = append(result, strings.Join(cs.faker.Words(2, true), "-"))
 	}
-
-	return pc
+	return result
 }
 
 // Delete pod
@@ -183,23 +181,7 @@ func (cs *MockClientSet) DeletePod(podName string, namespace string) error {
 
 // Get pod container logs
 func (cs *MockClientSet) GetPodContainerLogs(podName string, containerName string, namespace string, o io.Writer) error {
-	tl := int64(50)
+	fmt.Fprint(o, strings.Join(cs.faker.Sentences(51, true), "\n"))
 
-	opts := &corev1.PodLogOptions{
-		Container: containerName,
-		TailLines: &tl,
-	}
-
-	req := cs.clientSet.CoreV1().Pods(namespace).GetLogs(podName, opts)
-
-	readCloser, err := req.Stream()
-	if err != nil {
-		return err
-	}
-
-	_, err = io.Copy(o, readCloser)
-
-	readCloser.Close()
-
-	return err
+	return nil
 }

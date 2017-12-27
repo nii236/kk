@@ -56,10 +56,6 @@ func load(g *gocui.Gui, client k8s.ClientSet, s *k.State) func(g *gocui.Gui) err
 		if s.UI.Table.Kind == k.KindTablePods {
 			if s.Entities.Pods.Cursor == 0 {
 				s.Entities.Pods.SetCursor(g, 1)
-				s.Entities.Pods.SetSelected(g, "")
-				if len(pods.Items) > 0 {
-					s.Entities.Pods.SetSelected(g, pods.Items[0].Name)
-				}
 			}
 		}
 
@@ -73,10 +69,6 @@ func load(g *gocui.Gui, client k8s.ClientSet, s *k.State) func(g *gocui.Gui) err
 		if s.UI.Table.Kind == k.KindTableDeployments {
 			if s.Entities.Deployments.Cursor == 0 {
 				s.Entities.Deployments.SetCursor(g, 1)
-				s.Entities.Deployments.SetSelected(g, "")
-				if len(deployments.Items) > 0 {
-					s.Entities.Deployments.SetSelected(g, deployments.Items[0].Name)
-				}
 			}
 		}
 

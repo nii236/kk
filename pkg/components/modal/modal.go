@@ -70,13 +70,11 @@ func (st *Widget) Layout(g *gocui.Gui) error {
 	v.Title = st.State.UI.Modal.Title
 	v.SetCursor(0, st.State.UI.Modal.Cursor)
 
-	// numLines := len(st.State.UI.Modal.Lines)
 	if st.State.UI.Modal.Cursor < vy {
 		v.SetOrigin(0, 0)
 	} else {
 		v.SetOrigin(0, st.State.UI.Modal.Cursor-vy+1)
 	}
-	// v.SetOrigin(0, st.State.UI.Modal.Cursor-5)
 	lines := st.State.UI.Modal.Lines
 	v.Write([]byte(strings.Join(lines, "\n")))
 	return nil

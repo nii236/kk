@@ -52,20 +52,22 @@ type ParsedFlags struct {
 	KubeConfigPath  string
 	RefreshInterval int
 	AutoRefresh     bool
-	DebugFile       string
-	PROD            bool
-	DEBUG           bool
-	TEST            bool
+	LogFilePath     string
+	LogToFile       bool
+	Prod            bool
+	Debug           bool
+	Test            bool
 }
 
 // Parse will parse the flags into a struct
 func (flags *ParsedFlags) Parse(c *cli.Context) error {
 	flags.KubeConfigPath = c.String("kubeconfig-path")
 	flags.RefreshInterval = c.Int("refresh-interval")
-	flags.PROD = c.Bool("production")
-	flags.DEBUG = c.Bool("debug")
-	flags.TEST = c.Bool("test")
-	flags.DebugFile = c.String("debug-file")
+	flags.Prod = c.Bool("production")
+	flags.Debug = c.Bool("debug")
+	flags.Test = c.Bool("test")
+	flags.LogToFile = c.Bool("log-to-file")
+	flags.LogFilePath = c.String("log-file-path")
 	flags.AutoRefresh = c.Bool("auto-refresh")
 
 	if flags.KubeConfigPath == "" {

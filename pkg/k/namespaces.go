@@ -11,13 +11,13 @@ type NamespaceEntities struct {
 	Cursor         int
 	Filter         string
 	FilterKind     string
-	Selected       string
 	Namespaces     *v1.NamespaceList `json:"-"`
 	SendingRequest bool
 }
 
 // LoadNamespaces updates the namespace state with a new dataset
 func (e *NamespaceEntities) LoadNamespaces(g1 *gocui.Gui, ns *v1.NamespaceList) {
+	Debugln("Namespaces: LoadNamespaces")
 	g1.Update(
 		func(g *gocui.Gui) error {
 			e.Size = len(ns.Items)
@@ -30,6 +30,7 @@ func (e *NamespaceEntities) LoadNamespaces(g1 *gocui.Gui, ns *v1.NamespaceList) 
 
 // CursorMove updates the namespace state with a new cursor position (delta)
 func (e *NamespaceEntities) CursorMove(g *gocui.Gui, delta int) {
+	Debugln("Namespaces: CursorMove")
 	if len(e.Namespaces.Items) < 2 {
 		return
 	}
@@ -41,5 +42,4 @@ func (e *NamespaceEntities) CursorMove(g *gocui.Gui, delta int) {
 		e.Cursor = len(e.Namespaces.Items)
 	}
 
-	e.Selected = e.Namespaces.Items[e.Cursor-1].Name
 }

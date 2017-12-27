@@ -3,6 +3,9 @@ package actions
 import (
 	"github.com/jroimartin/gocui"
 	"github.com/nii236/k/pkg/k"
+	"github.com/nii236/k/pkg/k8s"
+	"github.com/prometheus/common/log"
+	"k8s.io/api/core/v1"
 )
 
 // TableClearFilter returns a function that will clear the filters for entities displayed in a table
@@ -29,6 +32,46 @@ func TableCursorMove(s *k.State, delta int) func(g1 *gocui.Gui, _ *gocui.View) e
 			k.Errorln("TableCursorMove: Unsupported kind", s.UI.Table.Kind)
 		}
 
+		return nil
+	}
+}
+
+// HandleTableEnter runs when pressing enter while focused on a Table
+func HandleTableEnter(s *k.State, c k8s.ClientSet) func(*gocui.Gui, *gocui.View) error {
+	return func(g *gocui.Gui, v2 *gocui.View) error {
+		k.Debugln("Table: pressed enter")
+		if s.UI.Table.Kind == k.KindTablePods {
+			containerFetcher := FetchContainers(s, c)
+			containerFetcher(g, v2)
+		}
+		return nil
+	}
+}
+
+// HandleTableDelete runs when pressing delete while focused on a Table
+func HandleTableDelete(s *k.State, c k8s.ClientSet) func(*gocui.Gui, *gocui.View) error {
+	return func(g *gocui.Gui, v *gocui.View) error {
+		k.Debugln("Table: Delete")
+		switch s.UI.Table.Kind {
+		case k.KindTablePods:
+			_, y := v.Cursor()
+			line, err := v.Line(y)
+			if err != nil {
+				log.Errorln(err)
+				return err
+			}
+			podName := k.PodNameFromLine(line)
+			podToDelete := &v1.Pod{}
+			for _, pod := range s.Entities.Pods.Pods.Items {
+				if podName == pod.Name {
+					podToDelete = &pod
+					break
+				}
+			}
+			c.DeletePod(podToDelete.Name, podToDelete.Namespace)
+		default:
+			k.Errorln("Table Delete: Unsupported Kind", s.UI.Table.Kind)
+		}
 		return nil
 	}
 }
