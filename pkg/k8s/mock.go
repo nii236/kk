@@ -155,33 +155,33 @@ func (cs *MockClientSet) seed() error {
 	return nil
 }
 
-// Get pods (use namespace)
+// GetPods (use namespace)
 func (cs *MockClientSet) GetPods(namespace string) (*corev1.PodList, error) {
 	return cs.clientSet.CoreV1().Pods(namespace).List(metav1.ListOptions{})
 }
 
-// Get namespaces
+// GetNamespaces will GetNamespaces
 func (cs *MockClientSet) GetNamespaces() (*corev1.NamespaceList, error) {
 	return cs.clientSet.CoreV1().Namespaces().List(metav1.ListOptions{})
 }
 
-// Get the pod containers
-func (cs *MockClientSet) GetPodContainers(podName string, namespace string) []string {
+// GetPodContainers will GetPodContainers
+func (cs *MockClientSet) GetPodContainers(podName string, namespace string) ([]string, error) {
 	result := []string{}
 	for i := 0; i < 3; i++ {
 		result = append(result, strings.Join(cs.faker.Words(2, true), "-"))
 	}
-	return result
+	return result, nil
 }
 
-// Delete pod
+// DeletePod will DeletePod
 func (cs *MockClientSet) DeletePod(podName string, namespace string) error {
 	return cs.clientSet.CoreV1().Pods(namespace).Delete(podName, &metav1.DeleteOptions{})
 }
 
-// Get pod container logs
+// GetPodContainerLogs will GetPodContainerLogs
 func (cs *MockClientSet) GetPodContainerLogs(podName string, containerName string, namespace string, o io.Writer) error {
-	fmt.Fprint(o, strings.Join(cs.faker.Sentences(51, true), "\n"))
+	fmt.Fprint(o, strings.Join(cs.faker.Sentences(5, true), "\n"))
 
 	return nil
 }

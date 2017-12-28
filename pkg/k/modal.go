@@ -13,6 +13,8 @@ type ModalView struct {
 }
 
 const (
+	// KindDebug is a special debug modal
+	KindDebug ModalKind = "Debug"
 	// KindModalNamespaces represents a modal of the type namespace
 	KindModalNamespaces ModalKind = "Namespaces"
 	// KindModalResources represents a modal of the type resource

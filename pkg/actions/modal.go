@@ -21,9 +21,14 @@ func HandleModalEnter(s *k.State, c k8s.ClientSet) func(*gocui.Gui, *gocui.View)
 		if s.UI.ActiveScreen == k.ScreenModal {
 			switch s.UI.Modal.Kind {
 			case k.KindModalResources:
-				resource := s.UI.Modal.Selected
-				s.UI.Table.SelectResource(g, resource)
+				_, y := v.Cursor()
+				selected, err := v.Line(y)
+				if err != nil {
+					k.Errorln(err)
+					return err
+				}
 				s.UI.SetActiveScreen(g, k.ScreenTable)
+				s.UI.Table.SetKind(g, k.TableKind(selected))
 			case k.KindModalNamespaces:
 				_, y := v.Cursor()
 				selected, err := v.Line(y)
@@ -34,6 +39,7 @@ func HandleModalEnter(s *k.State, c k8s.ClientSet) func(*gocui.Gui, *gocui.View)
 				s.Entities.Pods.SetFilter(g, selected)
 				s.Entities.Deployments.SetFilter(g, selected)
 				s.UI.SetActiveScreen(g, k.ScreenTable)
+				s.UI.Table.SetKind(g, k.KindTablePods)
 			case k.KindModalSelectContainer:
 				logFetcher := FetchLogs(s, c)
 				logFetcher(g, v)
@@ -56,12 +62,16 @@ func HandleModalEsc(s *k.State) func(*gocui.Gui, *gocui.View) error {
 			switch s.UI.Modal.Kind {
 			case k.KindModalResources:
 				s.UI.SetActiveScreen(g, k.ScreenTable)
+				s.UI.Table.SetKind(g, k.KindTablePods)
 			case k.KindModalNamespaces:
 				s.UI.SetActiveScreen(g, k.ScreenTable)
+				s.UI.Table.SetKind(g, k.KindTablePods)
 			case k.KindModalSelectContainer:
 				s.UI.SetActiveScreen(g, k.ScreenTable)
+				s.UI.Table.SetKind(g, k.KindTablePods)
 			case k.KindModalContainerLogs:
 				s.UI.SetActiveScreen(g, k.ScreenTable)
+				s.UI.Table.SetKind(g, k.KindTablePods)
 			default:
 				k.Errorln("Unsupported Modal Kind: " + s.UI.Modal.Kind)
 			}

@@ -6,6 +6,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/pkg/errors"
+
 	appsv1 "k8s.io/api/apps/v1beta1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -42,17 +44,12 @@ func NamespaceLineHelper(ns corev1.Namespace) []string {
 }
 
 // PodNameFromLine returns a pods name from a line in a table
-func PodNameFromLine(line string) string {
-	if line == "" {
-		return ""
+func PodNameFromLine(line string) (string, error) {
+	lines := strings.Fields(line)
+	if len(lines) < 1 {
+		return "", errors.New("could not extra pod from line")
 	}
-
-	i := strings.Index(line, " ")
-	if i == -1 {
-		return line
-	}
-
-	return line[0:i]
+	return lines[1], nil
 }
 
 // PodLineHelper is the column helper for Pods

@@ -33,7 +33,6 @@ func (st *Widget) Layout(g *gocui.Gui) error {
 	}
 
 	g.SetViewOnTop(k.ScreenDebug.String())
-	g.SetCurrentView(k.ScreenDebug.String())
 	v.Title = "Debug"
 	v.Autoscroll = true
 	return nil

@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 
 	"github.com/nii236/k/pkg/k"
@@ -34,7 +33,6 @@ func run(c *cli.Context) error {
 		if err != nil {
 			log.Fatalln(errors.Wrap(err, "main.go: Could not initialise k8s client"))
 		}
-		log.Out = ioutil.Discard
 		return app.Run()
 	}
 
@@ -46,7 +44,6 @@ func run(c *cli.Context) error {
 	if err != nil {
 		fmt.Println(err)
 	}
-	log.Out = ioutil.Discard
 	return app.Run()
 
 }

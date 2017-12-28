@@ -1,8 +1,6 @@
 package k
 
 import (
-	"github.com/pkg/errors"
-
 	"github.com/jroimartin/gocui"
 )
 
@@ -13,36 +11,12 @@ type TableView struct {
 
 const (
 	// KindTableDeployments is the table of type Deployments
-	KindTableDeployments TableKind = "Deployments"
+	KindTableDeployments TableKind = "DeploymentsTable"
 	// KindTablePods is the table of type Pods
-	KindTablePods TableKind = "Pods"
+	KindTablePods TableKind = "PodsTable"
 	// KindTableNamespaces is the table of type Namespaces
-	KindTableNamespaces TableKind = "Namespaces"
+	KindTableNamespaces TableKind = "NamespacesTable"
 )
-
-// SelectResource updates the table view state with a new selected resource to display
-func (v *TableView) SelectResource(g1 *gocui.Gui, resource string) {
-	Debugln("UI TableView: SelectResource")
-	g1.Update(
-		func(g *gocui.Gui) error {
-			switch resource {
-			case KindTableNamespaces.String():
-				Debugln("SelectResource Namespace")
-				v.SetKind(g, KindTableNamespaces)
-			case KindTablePods.String():
-				Debugln("SelectResource Pod")
-				v.SetKind(g, KindTablePods)
-			case KindTableDeployments.String():
-				Debugln("SelectResource Deployments")
-				v.SetKind(g, KindTableDeployments)
-			default:
-				Errorln(errors.New("Unsupported resource: " + resource))
-			}
-			return nil
-
-		},
-	)
-}
 
 // SetKind updates the table view state with a new table kind
 func (v *TableView) SetKind(g1 *gocui.Gui, kind TableKind) {

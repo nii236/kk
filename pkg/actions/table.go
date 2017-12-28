@@ -4,7 +4,6 @@ import (
 	"github.com/jroimartin/gocui"
 	"github.com/nii236/k/pkg/k"
 	"github.com/nii236/k/pkg/k8s"
-	"github.com/prometheus/common/log"
 	"k8s.io/api/core/v1"
 )
 
@@ -57,10 +56,14 @@ func HandleTableDelete(s *k.State, c k8s.ClientSet) func(*gocui.Gui, *gocui.View
 			_, y := v.Cursor()
 			line, err := v.Line(y)
 			if err != nil {
-				log.Errorln(err)
+				k.Errorln(err)
 				return err
 			}
-			podName := k.PodNameFromLine(line)
+			podName, err := k.PodNameFromLine(line)
+			if err != nil {
+				k.Errorln(err)
+				return err
+			}
 			podToDelete := &v1.Pod{}
 			for _, pod := range s.Entities.Pods.Pods.Items {
 				if podName == pod.Name {

@@ -47,9 +47,9 @@ func (app *App) Run() error {
 
 var store = &k.State{
 	UI: &k.UIReducer{
-		ActiveScreen: "Table",
+		ActiveScreen: k.ScreenTable,
 		Table: &k.TableView{
-			Kind: "Pods",
+			Kind: k.KindTablePods,
 		},
 		Modal: &k.ModalView{
 			Cursor: 0,
@@ -107,8 +107,10 @@ func New(flags *k.ParsedFlags, clientSet k8s.ClientSet) (*App, error) {
 	app.Gui = g
 	app.Gui.InputEsc = true
 	app.Gui.SelFgColor = gocui.ColorGreen
-
-	tableView := table.New(k.ScreenTable.String(), store)
+	// tableView := table.New(k.ScreenTable.String(), store)
+	deploymentsView := table.New(k.KindTableDeployments.String(), store, table.NewDeploymentRenderer())
+	namespacesView := table.New(k.KindTableNamespaces.String(), store, table.NewNamespaceRenderer())
+	podView := table.New(k.KindTablePods.String(), store, table.NewPodRenderer())
 	modalView := modal.New(k.ScreenModal.String(), store)
 	debugView := debug.New(k.ScreenDebug.String(), store)
 
@@ -116,8 +118,7 @@ func New(flags *k.ParsedFlags, clientSet k8s.ClientSet) (*App, error) {
 	titleSpan := span.New("Title", "Kubectl TUI", true, span.Top, store)
 	legendSpan := span.New("Legend", "", true, span.Bottom, store)
 
-	app.Gui.SetManager(tableView, debugView, modalView, titleSpan, legendSpan)
-
+	app.Gui.SetManager(debugView, podView, deploymentsView, namespacesView, modalView, titleSpan, legendSpan)
 	keys := []Key{
 		Key{"", gocui.KeyCtrlC, exit},
 		Key{"", gocui.KeyCtrlR, actions.ToggleResources(store)},
@@ -125,7 +126,7 @@ func New(flags *k.ParsedFlags, clientSet k8s.ClientSet) (*App, error) {
 		Key{"", gocui.KeyCtrlD, actions.ToggleViewDebug(store)},
 		Key{"Debug", gocui.KeyEsc, actions.HandleDebugEsc(store)},
 		Key{"Modal", gocui.KeyEsc, actions.HandleModalEsc(store)},
-		Key{"Table", 'd', actions.HandleTableDelete(store, clientSet)},
+		Key{"", 'd', actions.HandleTableDelete(store, clientSet)},
 		Key{"", 'D', actions.StateDump(store)},
 		Key{"", 'L', actions.LoadManual(app.ClientSet, store)},
 		Key{"Modal", gocui.KeyArrowUp, actions.ModalCursorMove(store, -1)},
@@ -133,12 +134,22 @@ func New(flags *k.ParsedFlags, clientSet k8s.ClientSet) (*App, error) {
 		Key{"Modal", gocui.KeyArrowDown, actions.ModalCursorMove(store, 1)},
 		Key{"Modal", gocui.KeyPgdn, actions.ModalCursorMove(store, 5)},
 		Key{"Modal", gocui.KeyEnter, actions.HandleModalEnter(store, clientSet)},
-		Key{"Table", gocui.KeyEnter, actions.HandleTableEnter(store, clientSet)},
-		Key{"Table", gocui.KeyCtrlF, actions.TableClearFilter(store)},
-		Key{"Table", gocui.KeyArrowUp, actions.TableCursorMove(store, -1)},
-		Key{"Table", gocui.KeyArrowDown, actions.TableCursorMove(store, 1)},
-		Key{"Table", gocui.KeyPgup, actions.TableCursorMove(store, -5)},
-		Key{"Table", gocui.KeyPgdn, actions.TableCursorMove(store, 5)},
+		Key{k.KindTablePods.String(), gocui.KeyEnter, actions.HandleTableEnter(store, clientSet)},
+		Key{k.KindTablePods.String(), gocui.KeyCtrlF, actions.TableClearFilter(store)},
+		Key{k.KindTablePods.String(), gocui.KeyArrowUp, actions.TableCursorMove(store, -1)},
+		Key{k.KindTablePods.String(), gocui.KeyArrowDown, actions.TableCursorMove(store, 1)},
+		Key{k.KindTablePods.String(), gocui.KeyPgup, actions.TableCursorMove(store, -5)},
+		Key{k.KindTablePods.String(), gocui.KeyPgdn, actions.TableCursorMove(store, 5)},
+
+		Key{k.KindTableDeployments.String(), gocui.KeyArrowUp, actions.TableCursorMove(store, -1)},
+		Key{k.KindTableDeployments.String(), gocui.KeyArrowDown, actions.TableCursorMove(store, 1)},
+		Key{k.KindTableDeployments.String(), gocui.KeyPgup, actions.TableCursorMove(store, -5)},
+		Key{k.KindTableDeployments.String(), gocui.KeyPgdn, actions.TableCursorMove(store, 5)},
+
+		Key{k.KindTableNamespaces.String(), gocui.KeyArrowUp, actions.TableCursorMove(store, -1)},
+		Key{k.KindTableNamespaces.String(), gocui.KeyArrowDown, actions.TableCursorMove(store, 1)},
+		Key{k.KindTableNamespaces.String(), gocui.KeyPgup, actions.TableCursorMove(store, -5)},
+		Key{k.KindTableNamespaces.String(), gocui.KeyPgdn, actions.TableCursorMove(store, 5)},
 	}
 
 	for _, key := range keys {
@@ -159,7 +170,7 @@ func New(flags *k.ParsedFlags, clientSet k8s.ClientSet) (*App, error) {
 				case <-t.C:
 
 					podLoader := actions.LoadAuto(clientSet, store)
-					tableView, err := g2.View("Table")
+					tableView, err := g2.View(k.KindTablePods.String())
 					if err != nil {
 						return
 					}

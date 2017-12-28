@@ -1,6 +1,7 @@
 package logger
 
 import (
+	"io/ioutil"
 	"os"
 
 	"github.com/sirupsen/logrus"
@@ -33,6 +34,7 @@ func New(DebugToFile, Debug bool) {
 		log.Infoln("Running in DEBUG mode")
 		log.SetLevel(logrus.DebugLevel)
 	}
+	log.Out = ioutil.Discard
 }
 
 // Get returns the singleton instance of the logger

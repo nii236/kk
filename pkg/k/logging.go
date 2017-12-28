@@ -26,6 +26,6 @@ type stackTracer interface {
 // Errorln is a wrapper for logrus' Errorln
 func Errorln(val ...interface{}) error {
 	log := logger.Get()
-	log.Errorf("%+v", val...)
+	log.Errorln(val...)
 	return nil
 }

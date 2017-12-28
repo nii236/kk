@@ -52,15 +52,18 @@ func (cs *RealClientSet) GetNamespaces() (*v1.NamespaceList, error) {
 }
 
 // Get the pod containers
-func (cs *RealClientSet) GetPodContainers(podName string, namespace string) []string {
+func (cs *RealClientSet) GetPodContainers(podName string, namespace string) ([]string, error) {
 	var pc []string
 
-	pod, _ := cs.clientset.CoreV1().Pods(namespace).Get(podName, metav1.GetOptions{})
+	pod, err := cs.clientset.CoreV1().Pods(namespace).Get(podName, metav1.GetOptions{})
+	if err != nil {
+		return nil, err
+	}
 	for _, c := range pod.Spec.Containers {
 		pc = append(pc, c.Name)
 	}
 
-	return pc
+	return pc, nil
 }
 
 // Delete pod
