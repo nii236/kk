@@ -2,7 +2,7 @@ package table
 
 import (
 	"github.com/jroimartin/gocui"
-	"github.com/nii236/k/pkg/k"
+	"github.com/nii236/kk/pkg/kk"
 	"github.com/olekukonko/tablewriter"
 )
 

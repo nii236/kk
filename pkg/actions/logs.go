@@ -7,8 +7,8 @@ import (
 	"strings"
 
 	"github.com/jroimartin/gocui"
-	"github.com/nii236/k/pkg/k"
-	"github.com/nii236/k/pkg/k8s"
+	"github.com/nii236/kk/pkg/k8s"
+	"github.com/nii236/kk/pkg/kk"
 	"k8s.io/api/core/v1"
 )
 

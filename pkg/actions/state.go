@@ -2,7 +2,7 @@ package actions
 
 import (
 	"github.com/jroimartin/gocui"
-	"github.com/nii236/k/pkg/k"
+	"github.com/nii236/kk/pkg/kk"
 )
 
 // StateDump returns a function that will log the current app state to the configured logger's output

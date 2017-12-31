@@ -2,8 +2,8 @@ package actions
 
 import (
 	"github.com/jroimartin/gocui"
-	"github.com/nii236/k/pkg/k"
-	"github.com/nii236/k/pkg/k8s"
+	"github.com/nii236/kk/pkg/k8s"
+	"github.com/nii236/kk/pkg/kk"
 )
 
 // ModalCursorMove returns a function that will move cursors for entities displayed in a modal

@@ -10,14 +10,14 @@ import (
 	"k8s.io/api/core/v1"
 
 	"github.com/jroimartin/gocui"
-	"github.com/nii236/k/pkg/actions"
-	"github.com/nii236/k/pkg/components/debug"
-	"github.com/nii236/k/pkg/components/modal"
-	"github.com/nii236/k/pkg/components/span"
-	"github.com/nii236/k/pkg/components/table"
-	"github.com/nii236/k/pkg/k"
-	"github.com/nii236/k/pkg/k8s"
-	"github.com/nii236/k/pkg/logger"
+	"github.com/nii236/kk/pkg/actions"
+	"github.com/nii236/kk/pkg/components/debug"
+	"github.com/nii236/kk/pkg/components/modal"
+	"github.com/nii236/kk/pkg/components/span"
+	"github.com/nii236/kk/pkg/components/table"
+	"github.com/nii236/kk/pkg/kk"
+	"github.com/nii236/kk/pkg/k8s"
+	"github.com/nii236/kk/pkg/logger"
 )
 
 // App contains the TUI

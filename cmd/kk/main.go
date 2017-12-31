@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/nii236/k/pkg/k"
-	"github.com/nii236/k/pkg/k8s"
-	"github.com/nii236/k/pkg/logger"
-	"github.com/nii236/k/pkg/ui"
+	"github.com/nii236/kk/pkg/k8s"
+	"github.com/nii236/kk/pkg/kk"
+	"github.com/nii236/kk/pkg/logger"
+	"github.com/nii236/kk/pkg/ui"
 	"github.com/pkg/errors"
 	"github.com/urfave/cli"
 )

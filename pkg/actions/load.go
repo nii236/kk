@@ -2,8 +2,8 @@ package actions
 
 import (
 	"github.com/jroimartin/gocui"
-	"github.com/nii236/k/pkg/k"
-	"github.com/nii236/k/pkg/k8s"
+	"github.com/nii236/kk/pkg/k8s"
+	"github.com/nii236/kk/pkg/kk"
 )
 
 // LoadAuto is function factory for the auto refresh for data

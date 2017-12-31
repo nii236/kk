@@ -2,7 +2,7 @@ package actions
 
 import (
 	"github.com/jroimartin/gocui"
-	"github.com/nii236/k/pkg/k"
+	"github.com/nii236/kk/pkg/kk"
 )
 
 // ToggleViewDebug returns a function that will toggle the debug view

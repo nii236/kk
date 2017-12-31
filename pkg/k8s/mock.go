@@ -10,7 +10,7 @@ import (
 
 	"k8s.io/client-go/kubernetes/fake"
 
-	"github.com/nii236/k/pkg/k"
+	"github.com/nii236/kk/pkg/kk"
 
 	appsv1 "k8s.io/api/apps/v1beta1"
 	corev1 "k8s.io/api/core/v1"

@@ -1,7 +1,7 @@
 package k
 
 import (
-	"github.com/nii236/k/pkg/logger"
+	"github.com/nii236/kk/pkg/logger"
 	"github.com/pkg/errors"
 )
 
