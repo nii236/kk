@@ -8,6 +8,7 @@ I got sick of typing the same `kubectl` commands over and over again so here is 
 # Installation
 
 ```
+go get -u github.com/golang/dep/cmd/dep
 go get github.com/nii236/k
 cd $GOPATH/src/github.com/nii236/k
 dep ensure
