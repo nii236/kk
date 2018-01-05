@@ -51,7 +51,7 @@ func run(c *cli.Context) error {
 func main() {
 
 	app := cli.NewApp()
-	app.Name = "k"
+	app.Name = "kk"
 	app.Usage = "Terminal User Interface (TUI) for Kubernetes"
 	app.Description = "For when you are sick of typing namespaces over and over again"
 	app.Version = "0.0.1"
@@ -101,5 +101,8 @@ func main() {
 			EnvVar: "TEST",
 		},
 	}
-	app.Run(os.Args)
+	err := app.Run(os.Args)
+	if err != nil {
+		fmt.Println(err)
+	}
 }

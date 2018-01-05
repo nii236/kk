@@ -12,7 +12,7 @@ go get -u github.com/golang/dep/cmd/dep
 go get -d -u github.com/nii236/kk/...
 cd $GOPATH/src/github.com/nii236/kk
 dep ensure
-go install cmd/kk/main.go
+go install ./...
 kk
 ```
 
@@ -21,7 +21,7 @@ NAME:
    kk - Terminal User Interface (TUI) for Kubernetes
 
 USAGE:
-   main [global options] command [command options] [arguments...]
+   kk [global options] command [command options] [arguments...]
 
 VERSION:
    0.0.1
